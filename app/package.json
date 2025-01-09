@@ -1,0 +1,19 @@
+{
+  "name": "exam-bdd-01-2024",
+  "version": "1.0.0",
+  "description": "exam de bdd de Jules G. et Tom A.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Tom A. et Jules G.",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "install": "^0.13.0",
+    "mysql2": "^3.12.0",
+    "npm": "^11.0.0"
+  }
+}
