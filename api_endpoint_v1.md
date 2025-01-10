@@ -4,126 +4,228 @@
 
 ### GET /api/client
 
-Get all clients with all of their information
---test ok--
+Get all clients with all of ther informations.  
+**Example Response**:
 
-### GET /api/client/:id
+```json
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "age": 35,
+    "email": "john.doe@example.com",
+    "phone_nb": 123456789,
+    "address": "123 Main Street"
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "age": 29,
+    "email": "jane.smith@example.com",
+    "phone_nb": 987654321,
+    "address": "456 Elm Street"
+  }
+]
+```
 
-Get a client by its id with all of its information
---test ok--
+---
+
+### GET /api/client/id?id={id}
+
+Get a client by its id with all of ther informations.  
+**Example Request**:  
+`GET /api/client/id?id=1`
+
+**Example Response**:
+
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "age": 35,
+  "email": "john.doe@example.com",
+  "phone_nb": 123456789,
+  "address": "123 Main Street"
+}
+```
+
+---
 
 ### POST /api/client
 
-Create a new client
-Required fields:
-name VARCHAR(255),
-age int,
-email varchar(255),
-phone_nb int,
-address varchar(255)
---test ok--
+Create a new client.  
+**Required Fields**:
 
-### PUT /api/client/:id
+- `name` (string)
+- `age` (integer)
+- `email` (string)
+- `phone_nb` (integer)
+- `address` (string)
 
-Edit a client by its id
---test ok--
+**Example Request**:
 
-### DELETE /api/client/:id
+```json
+{
+  "name": "Alice Brown",
+  "age": 42,
+  "email": "alice.brown@example.com",
+  "phone_nb": 654321987,
+  "address": "789 Pine Street"
+}
+```
 
-Delete a client by its id
---test ok--
+**Example Response**:
+
+```json
+{
+  "message": "Client created successfully",
+  "client_id": 3
+}
+```
+
+---
 
 ## Category
 
 ### GET /api/category
 
-Get all categories with all of their information
---test ok--
+Get all categories with all ther informations.  
+**Example Response**:
 
-### GET /api/category/:id
+```json
+[
+  {
+    "id": 1,
+    "name": "Electronics"
+  },
+  {
+    "id": 2,
+    "name": "Books"
+  }
+]
+```
 
-Get a category by its id with all of its information
---test ok--
+---
 
 ### POST /api/category
 
-Create a new category
-required fields:
-name VARCHAR(255),
---test ok--
+Create a new category.  
+**Required Fields**:
 
-### PUT /api/category/:id
+- `name` (string)
 
-Edit a category by its id
---test ok--
+**Example Request**:
 
-### DELETE /api/category/:id
+```json
+{
+  "name": "Toys"
+}
+```
 
-Delete a category by its id
---test ok--
+**Example Response**:
+
+```json
+{
+  "message": "Category created successfully",
+  "category_id": 3
+}
+```
+
+---
 
 ## Supplier
 
-### GET /api/supplier
-
-Get all suppliers with all of their information
---test ok--
-
 ### GET /api/supplier/:id
 
-Get a supplier by its id with all of its information
---test ok--
+Get a supplier by its id with all ther informations.  
+**Example Request**:  
+`GET /api/supplier/1`
 
-### POST /api/supplier
+**Example Response**:
 
-Create a new supplier
-required fields:
-name VARCHAR(255),
-email varchar(255),
-phone_nb int,
-address varchar(255)
---test ok--
+```json
+{
+  "id": 1,
+  "name": "Tech Corp",
+  "email": "support@techcorp.com",
+  "phone_nb": 123456789,
+  "address": "101 Tech Street"
+}
+```
 
-### PUT /api/supplier/:id
-
-Edit a supplier by its id
---test ok--
-
-### DELETE /api/supplier/:id
-
-Delete a supplier by its id
---test ok--
+---
 
 ## Product
 
-### GET /api/product
-
-Get all products with all of their information
---test ok--
-
-### GET /api/product/:id
-
-Get a product by its id with all of its information
---test ok--
-
 ### POST /api/product
 
-Create a new product
-required fields:
-name VARCHAR(255),
-price float,
-category_id int
-supplier_id int
---test ok--
+Create a new product.  
+**Required Fields**:
 
-### PUT /api/product/:id
+- `name` (string)
+- `price` (float)
+- `category_id` (integer)
+- `supplier_id` (integer)
 
-Edit a product by its id
---test ok--
+**Example Request**:
 
-### DELETE /api/product/:id
+```json
+{
+  "name": "Smartphone",
+  "price": 699.99,
+  "category_id": 1,
+  "supplier_id": 1
+}
+```
 
-Delete a product by its id
---test ok--
+**Example Response**:
+
+```json
+{
+  "message": "Product created successfully",
+  "product_id": 1
+}
+```
+
+---
 
 ## Command
+
+### GET /api/command/id?id={id}
+
+Get a command by its id with all ther informations.  
+**Example Request**:  
+`GET /api/command/id?id=1`
+
+**Example Response**:
+
+```json
+{
+  "id": 1,
+  "client_id": 1,
+  "total_price": 199.99,
+  "product_nb": 3,
+  "expedition_date": "2025-01-10",
+  "delivery_date": "2025-01-15",
+  "products": [
+    {
+      "product_id": 1,
+      "name": "Smartphone",
+      "price": 699.99,
+      "quantity": 1
+    },
+    {
+      "product_id": 2,
+      "name": "Laptop",
+      "price": 1299.99,
+      "quantity": 1
+    }
+  ]
+}
+
+And for all of the endpoint, there is PUT and DELETE methods to update and delete the data.
+
+For the PUT method, the request body is the same as the POST method.
+
+For the DELETE method, the request params is the same as the GET method.
+```
