@@ -3,23 +3,14 @@ const db = require("../utils/db")
 async function createClient(client) {
   try {
     const { name, age, email, phone_nb, address } = client
-    const queryInsert =
-      "INSERT INTO client (name, age, email, phone_nb, address) VALUES ('" +
-      name +
-      "', '" +
-      age +
-      "', '" +
-      email +
-      "', '" +
-      phone_nb +
-      "', '" +
-      address +
-      "')"
-    await db.execute(queryInsert)
-
-    const querySelect = "SELECT * FROM client WHERE id = " + insertedId
-    const [rows] = await db.execute(querySelect)
-
+    await db.execute("CALL addClient(?, ?, ?, ?, ?)", [
+      name,
+      age,
+      email,
+      phone_nb,
+      address,
+    ])
+    const [rows] = await db.execute("CALL getClient(?)", [id])
     return rows[0]
   } catch (err) {
     console.error("Error while creating client :", err)
@@ -29,7 +20,7 @@ async function createClient(client) {
 
 async function listClients() {
   try {
-    const [rows] = await db.execute("SELECT * FROM client")
+    const [rows] = await db.execute("CALL getAllClients()")
     return rows
   } catch (err) {
     console.error("Error while getting clients:", err)
@@ -38,9 +29,7 @@ async function listClients() {
 }
 async function getClientById(id) {
   try {
-    const query = "SELECT * FROM client WHERE id = " + id
-    console.log("Query executed:", query)
-    const [rows] = await db.execute(query)
+    const [rows] = await db.execute("CALL getClient(?)", [id])
     return rows[0]
   } catch (err) {
     console.error("Error while getting client by id:", err)
@@ -51,23 +40,17 @@ async function getClientById(id) {
 async function updateClient(id, client) {
   const { name, age, email, phone_nb, address } = client
   try {
-    const queryUpdate =
-      "UPDATE client SET name = '" +
-      name +
-      "', age = '" +
-      age +
-      "', email = '" +
-      email +
-      "', phone_nb = '" +
-      phone_nb +
-      "', address = '" +
-      address +
-      "' WHERE id = " +
-      id
-    await db.execute(queryUpdate)
+    await db.execute("CALL updateClient(?, ?, ?, ?, ?, ?)", [
+      id,
+      name,
+      age,
+      email,
+      phone_nb,
+      address,
+    ])
 
-    const querySelect = "SELECT * FROM client WHERE id = " + id
-    const [rows] = await db.execute(querySelect)
+    const [rows] = await db.execute("CALL getClient(?)", [id])
+    return rows[0]
   } catch (err) {
     console.error("Error while updating client:", err)
     throw err
@@ -76,7 +59,7 @@ async function updateClient(id, client) {
 
 async function deleteClient(id) {
   try {
-    await db.execute("DELETE FROM client WHERE id = ?", [id])
+    await db.execute("CALL deleteClient(?)", [id])
   } catch (err) {
     console.error("Error while deleting client:", err)
     throw err
@@ -91,9 +74,8 @@ async function listClientCommands(id) {
       "FROM command c " +
       "JOIN product_cmd pc ON c.id = pc.command_id " +
       "JOIN product p ON pc.product_id = p.id " +
-      "JOIN client cl ON c.client_id = cl.id WHERE c.client_id = " +
-      id
-    const [rows] = await db.execute(query)
+      "JOIN client cl ON c.client_id = cl.id WHERE c.client_id = ?"
+    const [rows] = await db.execute(query, [id])
 
     const commandsWithProducts = rows.map((row) => ({
       ...row,

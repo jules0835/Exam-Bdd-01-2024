@@ -3,39 +3,27 @@ const db = require("../utils/db")
 async function createProduct(product) {
   const { name, price, quantity, category_id, supplier_id } = product
   try {
-    const queryInsertProduct =
-      "INSERT INTO product (name, price, quantity, category_id) VALUES (" +
-      name +
-      ", " +
-      price +
-      ", " +
-      quantity +
-      ", " +
-      category_id +
-      ");"
-    await db.execute(queryInsertProduct)
+    const [result] = await db.execute("CALL addProduct(?, ?, ?, ?)", [
+      name,
+      price,
+      quantity,
+      category_id,
+    ])
 
-    const [result] = await db.execute(queryInsertProduct)
-    const insertedId = result.insertId
+    const insertedId = result[0][0].id
 
     if (supplier_id) {
-      const queryInsertSupplierProduct =
-        "INSERT INTO supplier_product (product_id, supplier_id) VALUES (" +
-        insertedId +
-        ", " +
-        supplier_id +
-        ")"
-      await db.execute(queryInsertSupplierProduct)
+      await db.execute("CALL addSupplierProduct(?, ?)", [
+        supplier_id,
+        insertedId,
+      ])
     }
 
-    const queryGetProduct =
-      "SELECT p.*, sp.supplier_id FROM product p LEFT JOIN supplier_product sp ON p.id = sp.product_id WHERE p.id = " +
-      insertedId
-    const [rows] = await db.execute(queryGetProduct)
+    const [rows] = await db.execute("CALL getProduct(?)", [insertedId])
 
     return rows[0]
   } catch (err) {
-    console.error("Error while creating the new the product:", err)
+    console.error("Error while creating the new product:", err)
     throw err
   }
 }
@@ -56,9 +44,8 @@ async function getProductById(id) {
   try {
     console.log("id", id)
     const query =
-      "SELECT p.*, sp.supplier_id FROM product p LEFT JOIN supplier_product sp ON p.id = sp.product_id WHERE p.id = " +
-      id
-    const [rows] = await db.execute(query)
+      "SELECT p.*, sp.supplier_id FROM product p LEFT JOIN supplier_product sp ON p.id = sp.product_id WHERE p.id = ?"
+    const [rows] = await db.execute(query, [id])
 
     return rows[0]
   } catch (err) {
@@ -71,16 +58,8 @@ async function updateProduct(id, product) {
   const { name, price, quantity, category_id, supplier_id } = product
   try {
     await db.execute(
-      "UPDATE product SET name = '" +
-        name +
-        "', price = " +
-        price +
-        ", quantity = " +
-        quantity +
-        ", category_id = " +
-        category_id +
-        " WHERE id = " +
-        id
+      "UPDATE product SET name = ?, price = ?, quantity = ?, category_id = ? WHERE id = ?",
+      [name, price, quantity, category_id, id]
     )
 
     if (supplier_id) {
