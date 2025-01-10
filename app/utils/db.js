@@ -16,8 +16,9 @@ function initDatabasePool() {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      multipleStatements: true,
     })
-    console.log("Pool de connexions à la base de données initialisé")
+    console.log("database pool created, reaaly the best idee ? TOSEE")
   }
   return pool
 }
