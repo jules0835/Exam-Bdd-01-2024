@@ -424,7 +424,23 @@ DELIMITER |
 
 CREATE PROCEDURE getSupplierProducts(in temp_supplier_id int)
 BEGIN
-	select * FROM supplier_product where supplier_id = temp_supplier_id;
+    SELECT 
+        sp.supplier_id,
+        sp.product_id,
+        p.name AS product_name,
+        p.price AS product_price,
+        p.category_id,
+        c.name AS category_name,
+        p.description,
+        p.quantity
+    FROM 
+        supplier_product sp
+    LEFT JOIN 
+        product p ON sp.product_id = p.id
+    LEFT JOIN 
+        category c ON p.category_id = c.id
+    WHERE 
+        sp.supplier_id = temp_supplier_id;
 END |
 
 DELIMITER ;
@@ -535,21 +551,56 @@ DELIMITER |
 CREATE PROCEDURE getStatsProductsSold()
 BEGIN
     SELECT 
-        p.id AS product_id,
-        p.name AS product_name,
-        SUM(pc.quantity) AS total_quantity_sold
+        SUM(pc.quantity) AS total_sold
     FROM 
-        product p
-    JOIN 
-        product_cmd pc ON p.id = pc.product_id
-    JOIN 
-        command c ON pc.command_id = c.id
-    GROUP BY 
-        p.id, p.name
-    ORDER BY 
-        total_quantity_sold DESC;
+        product_cmd pc;
 END |
 
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getStatsByProducts;
+DELIMITER |
+CREATE PROCEDURE getStatsByProducts()
+BEGIN
+    SELECT 
+        p.id AS product_id,
+        p.name AS product_name,
+        c.name AS category_name,
+        SUM(pc.quantity) AS total_sold,
+        SUM(pc.quantity * p.price) AS total_revenue
+    FROM 
+        product p
+    LEFT JOIN 
+        category c ON p.category_id = c.id
+    LEFT JOIN 
+        product_cmd pc ON p.id = pc.product_id
+    GROUP BY 
+        p.id, p.name, c.name
+    HAVING 
+        total_sold > 0;
+END |
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getStatsByCategory;
+DELIMITER |
+CREATE PROCEDURE getStatsByCategory()
+BEGIN
+    SELECT 
+        c.id AS category_id,
+        c.name AS category_name,
+        SUM(pc.quantity) AS total_sold,
+        SUM(pc.quantity * p.price) AS total_revenue
+    FROM 
+        category c
+    LEFT JOIN 
+        product p ON c.id = p.category_id
+    LEFT JOIN 
+        product_cmd pc ON p.id = pc.product_id
+    GROUP BY 
+        c.id, c.name
+    HAVING 
+        total_sold > 0;
+END |
 DELIMITER ;
 
 
@@ -583,18 +634,9 @@ DELIMITER |
 CREATE PROCEDURE getStatsTotalSales()
 BEGIN
     SELECT 
-        c.command_date,
-        SUM(pc.quantity * p.price) AS total_sales
+        SUM(total_price) AS total_sales
     FROM 
-        command c
-    JOIN 
-        product_cmd pc ON c.id = pc.command_id
-    JOIN 
-        product p ON pc.product_id = p.id
-    GROUP BY 
-        c.command_date
-    ORDER BY 
-        c.command_date;
+        command;
 END |
 
 DELIMITER ;
@@ -664,3 +706,4 @@ BEGIN
 END |
 
 DELIMITER ;
+

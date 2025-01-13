@@ -82,9 +82,9 @@
   - `id` : Identifiant unique de la catégorie.
 - **Exemple de retour** : Pas de contenu (204).
 
---
+---
 
-## GET /category/search
+## GET /search/category
 
 - **Description** : Recherche des catégories en fonction d’un terme donné.
 - **Méthode** : GET
@@ -430,16 +430,15 @@
     }
   ]
   ```
-  Here's an **API documentation** draft based on the given product management endpoints:
 
-````markdown
-# API Documentation for Product Management
+# Product
 
 ## POST /product
 
-- **Description**: Add a new product to the database.
+- **Description**: Crée un nouveau produit dans la base de données.
 - **Method**: POST
 - **Request Body** (JSON):
+
   ```json
   {
     "name": "Product name",
@@ -450,7 +449,6 @@
     "description": "Short description of the product"
   }
   ```
-````
 
 - **Response Example**:
   ```json
@@ -467,11 +465,9 @@
 
 ---
 
-# Product
-
 ## GET /product
 
-- **Description**: Retrieve a list of all products.
+- **Description**: Retourne la liste de tous les produits.
 - **Method**: GET
 - **Response Example**:
   ```json
@@ -499,10 +495,10 @@
 
 ## GET /product/:id
 
-- **Description**: Retrieve details of a product by its ID.
+- **Description**: Retrouve un produit en fonction de son ID.
 - **Method**: GET
 - **URL Parameters**:
-  - `id`: Unique ID of the product.
+  - `id`: Identifiant unique du produit.
 - **Response Example**:
   ```json
   {
@@ -519,10 +515,10 @@
 
 ## PUT /product/:id
 
-- **Description**: Update the details of an existing product.
+- **Description**: Mis à jour d'un produit existant.
 - **Method**: PUT
 - **URL Parameters**:
-  - `id`: Unique ID of the product.
+  - `id`: Id unique du produit.
 - **Request Body** (JSON):
   ```json
   {
@@ -550,20 +546,20 @@
 
 ## DELETE /product/:id
 
-- **Description**: Delete a product by its ID.
+- **Description**: Supprimer un produit de la base de données en fonction de son ID.
 - **Method**: DELETE
 - **URL Parameters**:
-  - `id`: Unique ID of the product.
+  - `id`: Identifiant unique du produit.
 - **Response**: No content (204).
 
 ---
 
 ## GET /product/:id/command
 
-- **Description**: Retrieve commands related to a product.
+- **Description**: Retrouve les commandes associées à un produit donné.
 - **Method**: GET
 - **URL Parameters**:
-  - `id`: Unique ID of the product.
+  - `id`: Id unique du produit.
 - **Response Example**:
   ```json
   [
@@ -586,10 +582,10 @@
 
 ## GET /search/product
 
-- **Description**: Search for products by name or category.
+- **Description**: Recherche des produits en fonction d'un terme donné.
 - **Method**: GET
 - **Query Parameters**:
-  - `q`: Search query.
+  - `q`: Nom du produit.
 - **Response Example**:
   ```json
   [
@@ -608,10 +604,10 @@
 
 ## GET /stock/notification
 
-- **Description**: Retrieve products with stock below a specified threshold.
+- **Description**: Retrouve les produits dont le stock est inférieur à un seuil donné.
 - **Method**: GET
 - **Query Parameters**:
-  - `seuil`: Stock threshold value.
+  - `seuil`: Seuil de stock minimum.
 - **Response Example**:
   ```json
   [
@@ -860,20 +856,36 @@ Obtenir des statistiques sur les commandes.
   - **Body (JSON)** :
     ```json
     {
-      "productsSold": 500,
-      "totalSales": 15000.0,
+      "productsSold": "21",
+      "totalSales": "7319.64",
       "totalSalesByProduct": [
         {
-          "product_id": 101,
-          "product_name": "Product A",
-          "total_sales": 5000.0,
-          "quantity_sold": 100
+          "product_id": 19,
+          "product_name": "Lego",
+          "category_name": "Jouets",
+          "total_sold": "6",
+          "total_revenue": "599.94"
         },
         {
-          "product_id": 102,
-          "product_name": "Product B",
-          "total_sales": 10000.0,
-          "quantity_sold": 400
+          "product_id": 61,
+          "product_name": "Product name 1 etvvo",
+          "category_name": "Électronique",
+          "total_sold": "15",
+          "total_revenue": "1500.00"
+        }
+      ],
+      "totalSalesByCategory": [
+        {
+          "category_id": 1,
+          "category_name": "Électronique",
+          "total_sold": "15",
+          "total_revenue": "1500.00"
+        },
+        {
+          "category_id": 3,
+          "category_name": "Jouets",
+          "total_sold": "6",
+          "total_revenue": "599.94"
         }
       ]
     }

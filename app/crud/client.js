@@ -104,7 +104,7 @@ async function listClientCommands(id) {
         })
       }
     }
-    return commands ? commands[0] : null
+    return commands ? commands : null
   } catch (err) {
     console.error("Error while getting client commands:", err)
     throw err

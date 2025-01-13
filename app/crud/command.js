@@ -265,14 +265,28 @@ async function filterCommandsByDates(start, end) {
 async function getStats() {
   try {
     const [productsSoldRows] = await db.execute("CALL getStatsProductsSold()")
-    const productsSold = productsSoldRows[0][0].products_sold
+    const productsSold = productsSoldRows[0][0].total_sold
+    console.log(productsSold)
 
     const [totalSalesRows] = await db.execute("CALL getStatsTotalSales()")
     const totalSales = totalSalesRows[0][0].total_sales
+    console.log(totalSales)
+
+    const [totalSalesByProductRows] = await db.execute(
+      "CALL getStatsByProducts()"
+    )
+    const totalSalesByProduct = totalSalesByProductRows[0]
+
+    const [totalSalesByCategoryRows] = await db.execute(
+      "CALL getStatsByCategory()"
+    )
+    const totalSalesByCategory = totalSalesByCategoryRows[0]
 
     return {
       productsSold,
       totalSales,
+      totalSalesByProduct,
+      totalSalesByCategory,
     }
   } catch (err) {
     console.error("Error while getting stats:", err)

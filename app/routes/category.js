@@ -5,6 +5,7 @@ const {
   getCategoryById,
   updateCategory,
   deleteCategory,
+  searchCategory,
 } = require("../crud/category")
 
 const router = express.Router()
@@ -67,7 +68,7 @@ router.delete("/category/:id", async (req, res) => {
   }
 })
 
-router.get("/category/search", async (req, res) => {
+router.get("/search/category", async (req, res) => {
   try {
     const { q } = req.query
     const result = await searchCategory(q)

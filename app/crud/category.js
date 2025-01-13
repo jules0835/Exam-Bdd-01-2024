@@ -57,10 +57,21 @@ async function deleteCategory(id) {
   }
 }
 
+async function searchCategory(query) {
+  try {
+    const [rows] = await db.execute("CALL searchCategory(?)", [query])
+    return rows
+  } catch (err) {
+    console.error("error while searching category:", err)
+    throw err
+  }
+}
+
 module.exports = {
   createCategory,
   listCategories,
   getCategoryById,
   updateCategory,
+  searchCategory,
   deleteCategory,
 }
