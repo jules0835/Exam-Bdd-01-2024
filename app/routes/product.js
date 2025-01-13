@@ -5,6 +5,9 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
+  listCommandsByProductId,
+  getLowStockProducts,
+  searchProduct,
 } = require("../crud/product")
 
 const router = express.Router()
@@ -34,10 +37,9 @@ router.get("/product", async (req, res) => {
   }
 })
 
-router.get("/product/id", async (req, res) => {
+router.get("/product/:id", async (req, res) => {
   try {
-    const id = req.query.id
-    console.log("id", id)
+    const { id } = req.params
     const result = await getProductById(id)
     res.status(200).json(result)
   } catch (error) {
@@ -67,6 +69,44 @@ router.delete("/product/:id", async (req, res) => {
     res.status(500).json({
       error: error.message,
       message: "error while deleting the product from the db",
+    })
+  }
+})
+
+router.get("/product/:id/command", async (req, res) => {
+  try {
+    const result = await listCommandsByProductId(req.params.id)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Error fetching commands by product ID",
+    })
+  }
+})
+
+router.get("/search/product", async (req, res) => {
+  try {
+    const { q } = req.query
+    const result = await searchProduct(q)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Error fetching products by name and category",
+    })
+  }
+})
+
+router.get("/stock/notification", async (req, res) => {
+  try {
+    const { seuil } = req.query
+    const result = await getLowStockProducts(seuil)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Error fetching products with low stock",
     })
   }
 })

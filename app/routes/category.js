@@ -67,4 +67,17 @@ router.delete("/category/:id", async (req, res) => {
   }
 })
 
+router.get("/category/search", async (req, res) => {
+  try {
+    const { q } = req.query
+    const result = await searchCategory(q)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      error: "Error searching for category",
+    })
+  }
+})
+
 module.exports = router

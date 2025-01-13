@@ -1,38 +1,41 @@
 const db = require("../utils/db")
+
 async function createSupplier(supplier) {
   const { name, address, email, phone_nb } = supplier
   try {
-    const query =
-      "INSERT INTO supplier (name, address, email, phone_nb) VALUES (?, ?, ?, ?)"
+    const [result] = await db.execute("CALL addSupplier(?, ?, ?, ?)", [
+      name,
+      address,
+      email,
+      phone_nb,
+    ])
 
-    const [result] = await db.execute(query, [name, address, email, phone_nb])
-    const insertedId = result.insertId
+    const insertedId = result[0][0].insertedId
 
-    const selectQuery = "SELECT * FROM supplier WHERE id = ?"
-    const [rows] = await db.execute(selectQuery, [insertedId])
+    const [rows] = await db.execute("CALL getSupplier(?)", [insertedId])
     return rows[0]
   } catch (err) {
-    console.error("error while trying to creating the supplier:", err)
+    console.error("Error while trying to create the supplier:", err)
     throw err
   }
 }
 
 async function listSuppliers() {
   try {
-    const [rows] = await db.execute("SELECT * FROM supplier")
-    return rows
+    const [rows] = await db.execute("CALL getSuppliers()")
+    return rows[0]
   } catch (err) {
-    console.error("error while fetching suppliers:", err)
+    console.error("Error while fetching suppliers:", err)
     throw err
   }
 }
 
 async function getSupplierById(id) {
   try {
-    const [rows] = await db.execute("SELECT * FROM supplier WHERE id = ?", [id])
+    const [rows] = await db.execute("CALL getSupplier(?)", [id])
     return rows[0]
   } catch (err) {
-    console.error("Error while fetching supplier by iD:", err)
+    console.error("Error while fetching supplier by ID:", err)
     throw err
   }
 }
@@ -40,37 +43,47 @@ async function getSupplierById(id) {
 async function updateSupplier(id, supplier) {
   const { name, address, email, phone_nb } = supplier
   try {
-    const updateQuery =
-      "UPDATE supplier SET name = ?, address = ?, email = ?, phone_nb = ? WHERE id = ?"
+    await db.execute("CALL updateSupplier(?, ?, ?, ?, ?)", [
+      id,
+      name,
+      address,
+      email,
+      phone_nb,
+    ])
 
-    await db.execute(updateQuery, [name, address, email, phone_nb, id])
-
-    const selectQuery = "SELECT * FROM supplier WHERE id = ?"
-    const [rows] = await db.execute(selectQuery, [id])
+    const [rows] = await db.execute("CALL getSupplier(?)", [id])
     return rows[0]
   } catch (err) {
-    console.error("Error while updating supplier :", err)
+    console.error("Error while updating supplier:", err)
     throw err
   }
 }
 
 async function deleteSupplier(id) {
   try {
-    await db.execute("DELETE FROM supplier WHERE id = ?", [id])
+    await db.execute("CALL deleteSupplier(?)", [id])
   } catch (err) {
-    console.error("error while delting supplier:", err)
+    console.error("Error while deleting supplier:", err)
     throw err
   }
 }
 
 async function getSupplierProducts(id) {
   try {
-    const query =
-      "SELECT p.* FROM product p JOIN supplier_product sp ON p.id = sp.product_id WHERE sp.supplier_id = ?"
-    const [rows] = await db.execute(query, [id])
-    return rows
+    const [rows] = await db.execute("CALL getSupplierProducts(?)", [id])
+    return rows[0]
   } catch (err) {
     console.error("Error while fetching supplier's products:", err)
+    throw err
+  }
+}
+
+async function searchSupplier(q) {
+  try {
+    const [rows] = await db.execute("CALL searchSupplier(?)", [q])
+    return rows
+  } catch (err) {
+    console.error("Error while searching supplierr:", err)
     throw err
   }
 }
@@ -82,4 +95,5 @@ module.exports = {
   updateSupplier,
   deleteSupplier,
   getSupplierProducts,
+  searchSupplier,
 }

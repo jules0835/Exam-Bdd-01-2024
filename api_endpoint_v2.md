@@ -204,7 +204,6 @@ Get a command by its id with all ther informations.
   "id": 1,
   "client_id": 1,
   "total_price": 199.99,
-  "product_nb": 3,
   "expedition_date": "2025-01-10",
   "delivery_date": "2025-01-15",
   "products": [

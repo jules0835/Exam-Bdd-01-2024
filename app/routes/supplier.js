@@ -6,6 +6,7 @@ const {
   updateSupplier,
   deleteSupplier,
   getSupplierProducts,
+  searchSupplier,
 } = require("../crud/supplier")
 
 const router = express.Router()
@@ -77,6 +78,19 @@ router.get("/supplier/:id/products", async (req, res) => {
     res.status(500).json({
       error: error.message,
       message: "Error fetching supplier products",
+    })
+  }
+})
+
+router.get("/search/supplier", async (req, res) => {
+  try {
+    const { q } = req.query
+    const result = await searchSupplier(q)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Error searching for supplier",
     })
   }
 })

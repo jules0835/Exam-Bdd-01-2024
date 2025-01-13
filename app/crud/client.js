@@ -3,14 +3,18 @@ const db = require("../utils/db")
 async function createClient(client) {
   try {
     const { name, age, email, phone_nb, address } = client
-    await db.execute("CALL addClient(?, ?, ?, ?, ?)", [
+    console.log("address:", address)
+    const [result] = await db.execute("CALL addClient(?, ?, ?, ?, ?)", [
       name,
       age,
       email,
       phone_nb,
       address,
     ])
-    const [rows] = await db.execute("CALL getClient(?)", [id])
+
+    const insertedId = result[0][0].insertedId
+
+    const [rows] = await db.execute("CALL getClient(?)", [insertedId])
     return rows[0]
   } catch (err) {
     console.error("Error while creating client :", err)
@@ -68,28 +72,51 @@ async function deleteClient(id) {
 
 async function listClientCommands(id) {
   try {
-    const query =
-      "SELECT c.*, cl.name AS client_name, cl.email AS client_email, " +
-      "p.id AS product_id, p.name AS product_name, p.price AS product_price, p.quantity AS product_quantity " +
-      "FROM command c " +
-      "JOIN product_cmd pc ON c.id = pc.command_id " +
-      "JOIN product p ON pc.product_id = p.id " +
-      "JOIN client cl ON c.client_id = cl.id WHERE c.client_id = ?"
-    const [rows] = await db.execute(query, [id])
+    const [rows] = await db.execute("CALL getClientCommands(?)", [id])
 
-    const commandsWithProducts = rows.map((row) => ({
-      ...row,
-      products: rows.map((row) => ({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        product_price: row.product_price,
-        product_quantity: row.product_quantity,
-      })),
-    }))
+    const commands = []
 
-    return commandsWithProducts
+    for (let row of rows[0]) {
+      const command = commands.find((command) => command.id === row.command_id)
+      console.log(command)
+      if (command) {
+        command.products.push({
+          product_id: row.product_id,
+          product_name: row.product_name,
+          product_price: row.product_price,
+          product_quantity: row.product_quantity,
+        })
+      } else {
+        commands.push({
+          id: row.command_id,
+          client_id: row.client_id,
+          total_price: row.total_price,
+          expedition_date: row.expedition_date,
+          delivery_date: row.delivery_date,
+          products: [
+            {
+              product_id: row.product_id,
+              product_name: row.product_name,
+              product_price: row.product_price,
+              product_quantity: row.product_quantity,
+            },
+          ],
+        })
+      }
+    }
+    return commands ? commands[0] : null
   } catch (err) {
-    console.error("rrror while getting client commands:", err)
+    console.error("Error while getting client commands:", err)
+    throw err
+  }
+}
+
+async function searchClients(q) {
+  try {
+    const [rows] = await db.execute("CALL searchClient(?)", [q])
+    return rows
+  } catch (err) {
+    console.error("Error while searching clients:", err)
     throw err
   }
 }
@@ -101,4 +128,5 @@ module.exports = {
   updateClient,
   deleteClient,
   listClientCommands,
+  searchClients,
 }

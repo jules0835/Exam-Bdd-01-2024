@@ -1,0 +1,666 @@
+DROP PROCEDURE IF EXISTS getAllClients;
+DELIMITER |
+
+CREATE PROCEDURE getAllClients()
+BEGIN
+    SELECT 
+        c.id, 
+        c.name, 
+        c.age, 
+        c.email, 
+        c.phone_nb,
+        c.address
+    FROM client c;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getClient;
+DELIMITER |
+
+CREATE PROCEDURE getClient(in client_id INT)
+BEGIN
+    SELECT 
+        c.id, 
+        c.name, 
+        c.age, 
+        c.email, 
+        c.phone_nb,
+        c.address
+    FROM client c
+    where c.id = client_id;
+END |
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS addClient;
+DELIMITER |
+
+CREATE PROCEDURE addClient(in name varchar(255), in age int, in email varchar(255), in phone_nb bigint, in address varchar(255))
+BEGIN
+    INSERT INTO client (name, age, email, phone_nb, address) VALUES 
+    (name, age, email, phone_nb, address);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS updateClient;
+DELIMITER |
+
+CREATE PROCEDURE updateClient(in temp_id int, in temp_name varchar(255), in temp_age int, in temp_email varchar(255), in temp_phone_nb bigint, in temp_address varchar(255))
+BEGIN
+    UPDATE client
+	SET 
+        name = CASE WHEN temp_name != name THEN temp_name ELSE name END,
+        age = CASE WHEN temp_age != age THEN temp_age ELSE age END,
+        email = CASE WHEN temp_email != email THEN temp_email ELSE email END,
+        phone_nb = CASE WHEN temp_phone_nb != phone_nb THEN temp_phone_nb ELSE phone_nb END,
+        address = CASE WHEN temp_address != address THEN temp_address ELSE address END
+	WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS deleteClient;
+DELIMITER |
+
+CREATE PROCEDURE deleteClient(in temp_id int)
+BEGIN
+    delete from client
+	WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS getCategories;
+DELIMITER |
+
+CREATE PROCEDURE getCategories()
+BEGIN
+    select * from category;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getCategory;
+DELIMITER |
+
+CREATE PROCEDURE getCategory(in temp_id int)
+BEGIN
+    select * from category where id = temp_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS addCategory;
+DELIMITER |
+
+CREATE PROCEDURE addCategory(in name varchar(255))
+BEGIN
+    INSERT INTO category (name) VALUES (name);
+    SELECT LAST_INSERT_ID() AS insertedId;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS updateCategory;
+DELIMITER |
+
+CREATE PROCEDURE updateCategory(in temp_id int, in temp_name varchar(255))
+BEGIN
+    UPDATE category
+	SET 
+        name = CASE WHEN temp_name != name THEN temp_name ELSE name END
+	WHERE id = temp_id;
+END |
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS deleteCategory;
+DELIMITER |
+
+CREATE PROCEDURE deleteCategory(IN temp_id INT)
+BEGIN
+    IF NOT EXISTS (
+        SELECT *
+        FROM product
+        WHERE category_id = temp_id
+    ) then
+        DELETE FROM category
+        WHERE id = temp_id;
+    END IF;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getProducts;
+DELIMITER |
+
+CREATE PROCEDURE getProducts()
+BEGIN
+    SELECT * FROM product;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getProduct;
+DELIMITER |
+
+CREATE PROCEDURE getProduct(in temp_id int)
+BEGIN
+    SELECT 
+        p.*, 
+        s.id AS supplier_id,
+        s.name AS supplier_name,
+        s.address AS supplier_address,
+        s.email AS supplier_email,
+        s.phone_nb AS supplier_phone_nb
+    FROM 
+        product p
+    LEFT JOIN 
+        supplier_product sp ON p.id = sp.product_id
+    LEFT JOIN 
+        supplier s ON sp.supplier_id = s.id
+    WHERE 
+        p.id = temp_id;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS addProduct;
+DELIMITER |
+
+CREATE PROCEDURE addProduct(in name varchar(255), in price decimal(10,2), in category_id int, in description varchar(255), in quantity int)
+BEGIN
+    INSERT INTO product (name, price, category_id, description, quantity) VALUES
+    (name, price, category_id, description, quantity);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS updateProduct;
+DELIMITER |
+
+CREATE PROCEDURE updateProduct(in temp_id int, in temp_name varchar(255), in temp_price decimal(10,2), in temp_category_id int, in temp_description varchar(255), in temp_quantity int)
+BEGIN
+    UPDATE product
+	SET 
+        name = CASE WHEN temp_name != name THEN temp_name ELSE name END,
+        price = CASE WHEN temp_price != price THEN temp_price ELSE price END,
+        category_id = CASE WHEN temp_category_id != category_id THEN temp_category_id ELSE category_id END
+        description = CASE WHEN temp_description != description THEN temp_description ELSE description END,
+        quantity = CASE WHEN temp_quantity != quantity THEN temp_quantity ELSE quantity END
+	WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS deleteProduct;
+DELIMITER |
+
+CREATE PROCEDURE deleteProduct(IN temp_id INT)
+BEGIN
+    IF NOT EXISTS (
+        SELECT *
+        FROM product_cmd
+        WHERE product_id = temp_id
+    ) then
+        DELETE FROM product
+        WHERE id = temp_id;
+    END IF;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS getCommands;
+DELIMITER |
+
+CREATE PROCEDURE getCommands()
+BEGIN
+    SELECT 
+        c.id AS command_id,
+        c.client_id,
+        c.total_price,
+        c.command_date,
+        c.expedition_date,
+        c.delivery_date,
+        pc.product_id,
+        p.name AS product_name,
+        p.price AS product_price,
+        pc.quantity
+    FROM 
+        command c
+    LEFT JOIN 
+        product_cmd pc ON c.id = pc.command_id
+    LEFT JOIN 
+        product p ON pc.product_id = p.id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getCommandsByDate;
+DELIMITER |
+
+CREATE PROCEDURE getCommandsByDate(IN start_date DATE, IN end_date DATE)
+BEGIN
+    SELECT * FROM command order by command_date between start_date and end_date;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getCommandsByProduct;
+DELIMITER |
+
+CREATE PROCEDURE getCommandsByProduct(IN temp_product_id INT)
+BEGIN
+    SELECT c.* 
+    FROM command c
+    LEFT JOIN product_cmd cp ON c.id = cp.command_id
+    WHERE cp.product_id = temp_product_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getCommand;
+DELIMITER |
+CREATE PROCEDURE getCommand(in temp_id int)
+BEGIN
+SELECT 
+        c.id AS command_id,
+        c.client_id,
+        c.total_price,
+        c.command_date,
+        c.expedition_date,
+        c.delivery_date,
+        pc.product_id,
+        p.name AS product_name,
+        p.price AS product_price,
+        pc.quantity
+    FROM 
+        command c
+    LEFT JOIN 
+        product_cmd pc ON c.id = pc.command_id
+    LEFT JOIN 
+        product p ON pc.product_id = p.id
+    WHERE 
+        c.id = temp_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS addCommand;
+DELIMITER |
+
+CREATE PROCEDURE addCommand(in client_id int)
+BEGIN
+    INSERT INTO command (client_id, total_price) VALUES 
+    (client_id, 0);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS updateCommand;
+DELIMITER |
+
+CREATE PROCEDURE updateCommand( in temp_id int, in temp_client_id int, in temp_total_price int, in temp_command_date datetime, in temp_expedition_date datetime, in temp_delivery_date datetime)
+BEGIN
+    UPDATE command
+    SET 
+        client_id = CASE WHEN temp_client_id != client_id THEN temp_client_id ELSE client_id END,
+        total_price = CASE WHEN temp_total_price != total_price THEN temp_total_price ELSE total_price END,
+        command_date = CASE WHEN IFNULL(temp_command_date, '1970-01-01') != IFNULL(command_date, '1970-01-01') THEN temp_command_date ELSE command_date END,
+        expedition_date = CASE WHEN IFNULL(temp_expedition_date, '1970-01-01') != IFNULL(expedition_date, '1970-01-01') THEN temp_expedition_date ELSE expedition_date END,
+        delivery_date = CASE WHEN IFNULL(temp_delivery_date, '1970-01-01') != IFNULL(delivery_date, '1970-01-01') THEN temp_delivery_date ELSE delivery_date END
+    WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS deleteCommand;
+DELIMITER |
+
+CREATE PROCEDURE deleteCommand( in temp_id int)
+BEGIN
+    DELETE FROM product_cmd
+    WHERE command_id = temp_id;
+
+
+    DELETE FROM command
+    WHERE id = temp_id;
+
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getSuppliers;
+DELIMITER |
+
+CREATE PROCEDURE getSuppliers()
+BEGIN
+	select * FROM supplier;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getSupplier;
+DELIMITER |
+
+CREATE PROCEDURE getSupplier(in temp_id int)
+BEGIN
+	select * FROM supplier where id = temp_id;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS addSupplier;
+DELIMITER |
+
+CREATE PROCEDURE addSupplier(in name varchar(255), in address varchar(255), in email varchar(255),in phone_nb bigint)
+BEGIN
+    INSERT INTO supplier (name, address, email, phone_nb) VALUES 
+    (name, address, email, phone_nb);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS updateSupplier;
+DELIMITER |
+
+CREATE PROCEDURE updateSupplier(in temp_id int, in temp_name varchar(255), in temp_address varchar(255), in temp_email varchar(255), in temp_phone_nb bigint)
+BEGIN
+    UPDATE supplier
+	SET 
+        name = CASE WHEN temp_name != name THEN temp_name ELSE name END,
+        address = CASE WHEN temp_address != address THEN temp_address ELSE address END,
+        email = CASE WHEN temp_email != email THEN temp_email ELSE email END,
+        phone_nb = CASE WHEN temp_phone_nb != phone_nb THEN temp_phone_nb ELSE phone_nb END
+	WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS deleteSupplier;
+DELIMITER |
+
+CREATE PROCEDURE deleteSupplier( in temp_id int)
+BEGIN
+    IF NOT EXISTS (
+        SELECT *
+        FROM supplier_product
+        WHERE product_id = temp_id
+    ) then
+        DELETE FROM supplier
+        WHERE id = temp_id;
+    END IF;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getSupplierProducts;
+DELIMITER |
+
+CREATE PROCEDURE getSupplierProducts(in temp_supplier_id int)
+BEGIN
+	select * FROM supplier_product where supplier_id = temp_supplier_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS addSupplierProduct;
+DELIMITER |
+
+CREATE PROCEDURE addSupplierProduct(in temp_supplier_id int, in temp_product_id int)
+BEGIN
+    INSERT INTO supplier_product (supplier_id, product_id) VALUES 
+    (temp_supplier_id, temp_product_id);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS updateSupplierProduct;
+DELIMITER |
+
+CREATE PROCEDURE updateSupplierProduct(in temp_supplier_id int, in temp_product_id int)
+BEGIN
+    UPDATE supplier_product
+    SET 
+        product_id = CASE WHEN temp_product_id != product_id THEN temp_product_id ELSE product_id END
+    WHERE product_id = temp_product_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS deleteSupplierProduct;
+DELIMITER |
+
+CREATE PROCEDURE deleteSupplierProduct(in temp_id int)
+BEGIN
+    DELETE FROM supplier_product WHERE product_id = temp_id;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS addProduct_Command;
+DELIMITER |
+
+CREATE PROCEDURE addProduct_Command(in temp_product_id int, in temp_command_id int, in temp_quantity int)
+BEGIN
+    INSERT INTO product_cmd (product_id, command_id, quantity) VALUES 
+    (temp_product_id, temp_command_id, temp_quantity);
+    SELECT LAST_INSERT_ID() AS insertedId;
+
+END |
+
+DELIMITER ;
+
+
+-- Searchs
+
+DROP PROCEDURE IF EXISTS searchClient;
+DELIMITER |
+
+CREATE PROCEDURE searchClient(in param varchar(255))
+BEGIN
+    SELECT * FROM client WHERE 
+		name LIKE CONCAT('%', param, '%')
+		OR email LIKE CONCAT('%', param, '%')
+		OR phone_nb LIKE CONCAT('%', param, '%')
+		OR address LIKE CONCAT('%', param, '%');
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS searchCategory;
+DELIMITER |
+
+CREATE PROCEDURE searchCategory(in param varchar(255))
+BEGIN
+    SELECT * FROM category WHERE name LIKE CONCAT('%', param, '%');
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS searchProduct;
+DELIMITER |
+
+CREATE PROCEDURE searchProduct(in param varchar(255))
+BEGIN
+    SELECT * FROM product WHERE name LIKE CONCAT('%', param, '%');
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS searchSupplier;
+DELIMITER |
+
+CREATE PROCEDURE searchSupplier(in param varchar(255))
+BEGIN
+    SELECT * FROM supplier WHERE 
+		name LIKE CONCAT('%', param, '%')
+		or address LIKE CONCAT('%', param, '%')
+        or email LIKE CONCAT('%', param, '%');
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getStatsProductsSold;
+DELIMITER |
+
+CREATE PROCEDURE getStatsProductsSold()
+BEGIN
+    SELECT 
+        p.id AS product_id,
+        p.name AS product_name,
+        SUM(pc.quantity) AS total_quantity_sold
+    FROM 
+        product p
+    JOIN 
+        product_cmd pc ON p.id = pc.product_id
+    JOIN 
+        command c ON pc.command_id = c.id
+    GROUP BY 
+        p.id, p.name
+    ORDER BY 
+        total_quantity_sold DESC;
+END |
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS updateStock;
+DELIMITER |
+
+CREATE PROCEDURE updateStock(in temp_id int, in temp_quantity int, in type varchar(255))
+BEGIN
+	UPDATE product
+	SET 
+		quantity = CASE WHEN type != "inc" THEN quantity - temp_quantity ELSE quantity + temp_quantity END
+	WHERE id = temp_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getLowStock;
+DELIMITER |
+
+CREATE PROCEDURE getLowStock(in seuil int)
+BEGIN
+	select * from product where quantity <= seuil;
+
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getStatsTotalSales;
+DELIMITER |
+
+CREATE PROCEDURE getStatsTotalSales()
+BEGIN
+    SELECT 
+        c.command_date,
+        SUM(pc.quantity * p.price) AS total_sales
+    FROM 
+        command c
+    JOIN 
+        product_cmd pc ON c.id = pc.command_id
+    JOIN 
+        product p ON pc.product_id = p.id
+    GROUP BY 
+        c.command_date
+    ORDER BY 
+        c.command_date;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS checkAndUpdateStock;
+DELIMITER |
+
+CREATE PROCEDURE checkAndUpdateStock(
+    IN p_product_id INT,
+    IN p_quantity INT
+)
+BEGIN
+    DECLARE availableStock INT;
+
+    SELECT quantity INTO availableStock
+    FROM product
+    WHERE id = p_product_id;
+
+    IF availableStock < p_quantity THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock insuffisant pour un produit';
+    END IF;
+
+    UPDATE product
+    SET quantity = quantity - p_quantity
+    WHERE id = p_product_id;
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS getClientCommands;
+DELIMITER |
+
+CREATE PROCEDURE getClientCommands(in temp_client_id int)
+BEGIN
+    SELECT 
+        c.id AS command_id,
+        c.client_id,
+        c.total_price,
+        c.command_date,
+        c.expedition_date,
+        c.delivery_date,
+        pc.product_id,
+        p.name AS product_name,
+        p.price AS product_price,
+        pc.quantity
+    FROM 
+        command c
+    LEFT JOIN 
+        product_cmd pc ON c.id = pc.command_id
+    LEFT JOIN 
+        product p ON pc.product_id = p.id
+    WHERE 
+        c.client_id = temp_client_id;
+
+
+END |
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS deleteProducts_command;
+DELIMITER |
+
+CREATE PROCEDURE deleteProducts_command(in temp_command_id int)
+BEGIN
+    DELETE FROM product_cmd WHERE command_id = temp_command_id;
+END |
+
+DELIMITER ;

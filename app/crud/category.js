@@ -5,7 +5,7 @@ async function createCategory(category) {
   try {
     const [result] = await db.execute("CALL addCategory(?)", [name])
 
-    const insertedId = result.insertId
+    const insertedId = result[0][0].insertedId
 
     const [rows] = await db.execute("CALL getCategory(?)", [insertedId])
     return rows[0]
@@ -42,7 +42,6 @@ async function updateCategory(id, category) {
 
     const [rows] = await db.execute("CALL getCategory(?)", [id])
     return rows[0]
-    z
   } catch (err) {
     console.error("error while updating categry:", err)
     throw err

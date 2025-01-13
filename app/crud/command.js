@@ -1,36 +1,70 @@
 const db = require("../utils/db")
 
 async function createCommand(command) {
-  const {
-    client_id,
-    total_price,
-    product_nb,
-    expedition_date,
-    delivery_date,
-    products,
-  } = command
+  const { client_id, products } = command
 
   try {
-    const query =
-      "SELECT c.*, cl.name AS client_name, cl.email AS client_email, " +
-      "p.id AS product_id, p.name AS product_name, p.price AS product_price, p.quantity AS product_quantity " +
-      "FROM command c " +
-      "JOIN product_cmd pc ON c.id = pc.command_id " +
-      "JOIN product p ON pc.product_id = p.id " +
-      "JOIN client cl ON c.client_id = cl.id WHERE c.client_id = ?"
-    const [rows] = await db.execute(query, [id])
+    for (let product of products) {
+      const { product_id, quantity } = product
 
-    const commandsWithProducts = rows.map((row) => ({
-      ...row,
-      products: rows.map((row) => ({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        product_price: row.product_price,
-        product_quantity: row.product_quantity,
-      })),
-    }))
+      try {
+        await db.execute("CALL checkAndUpdateStock(?, ?)", [
+          product_id,
+          quantity,
+        ])
+      } catch (err) {
+        return { error: err.message }
+      }
+    }
 
-    return commandsWithProducts
+    const [result] = await db.execute("CALL addCommand(?)", [client_id])
+
+    const commadnId = result[0][0].insertedId
+
+    for (let product of products) {
+      const { product_id, quantity } = product
+
+      await db.execute("CALL addProduct_command(?, ?, ?)", [
+        product_id,
+        commadnId,
+        quantity,
+      ])
+    }
+
+    const [rows] = await db.execute("CALL getCommand(?)", [commadnId])
+
+    const commands = []
+
+    for (let row of rows[0]) {
+      const command = commands.find((command) => command.id === row.command_id)
+      console.log(command)
+      if (command) {
+        command.products.push({
+          product_id: row.product_id,
+          product_name: row.product_name,
+          product_price: row.product_price,
+          product_quantity: row.product_quantity,
+        })
+      } else {
+        commands.push({
+          id: row.command_id,
+          client_id: row.client_id,
+          total_price: row.total_price,
+          expedition_date: row.expedition_date,
+          delivery_date: row.delivery_date,
+          products: [
+            {
+              product_id: row.product_id,
+              product_name: row.product_name,
+              product_price: row.product_price,
+              product_quantity: row.product_quantity,
+            },
+          ],
+        })
+      }
+    }
+    console.log(commands)
+    return commands
   } catch (err) {
     console.error("Error while creating the command:", err)
     throw err
@@ -39,40 +73,39 @@ async function createCommand(command) {
 
 async function listCommands() {
   try {
-    const [rows] = await db.execute(
-      "SELECT c.*, cl.name AS client_name, cl.email AS client_email, " +
-        "p.id AS product_id, p.name AS product_name, p.price AS product_price, p.quantity AS product_quantity " +
-        "FROM command c " +
-        "JOIN product_cmd pc ON c.id = pc.command_id " +
-        "JOIN product p ON pc.product_id = p.id " +
-        "JOIN client cl ON c.client_id = cl.id"
-    )
+    const [rows] = await db.execute("CALL getCommands()")
 
     const commands = []
-    rows.forEach((row) => {
-      let command = commands.find((cmd) => cmd.id === row.id)
-      if (!command) {
-        command = {
-          id: row.id,
+
+    for (let row of rows[0]) {
+      const command = commands.find((command) => command.id === row.command_id)
+      console.log(command)
+      if (command) {
+        command.products.push({
+          product_id: row.product_id,
+          product_name: row.product_name,
+          product_price: row.product_price,
+          product_quantity: row.product_quantity,
+        })
+      } else {
+        commands.push({
+          id: row.command_id,
           client_id: row.client_id,
           total_price: row.total_price,
-          command_date: row.command_date,
           expedition_date: row.expedition_date,
           delivery_date: row.delivery_date,
-          client_name: row.client_name,
-          client_email: row.client_email,
-          products: [],
-        }
-        commands.push(command)
+          products: [
+            {
+              product_id: row.product_id,
+              product_name: row.product_name,
+              product_price: row.product_price,
+              product_quantity: row.product_quantity,
+            },
+          ],
+        })
       }
-      command.products.push({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        product_price: row.product_price,
-        product_quantity: row.product_quantity,
-      })
-    })
-
+    }
+    console.log(commands)
     return commands
   } catch (err) {
     console.error("Error while fetching commands:", err)
@@ -82,27 +115,39 @@ async function listCommands() {
 
 async function getCommandById(id) {
   try {
-    const query =
-      "SELECT c.*, cl.name AS client_name, cl.email AS client_email, " +
-      "p.id AS product_id, p.name AS product_name, p.price AS product_price, p.quantity AS product_quantity " +
-      "FROM command c " +
-      "JOIN product_cmd pc ON c.id = pc.command_id " +
-      "JOIN product p ON pc.product_id = p.id " +
-      "JOIN client cl ON c.client_id = cl.id WHERE c.id = ?"
+    const [rows] = await db.execute("CALL getCommand(?)", [id])
 
-    const [rows] = await db.execute(query, [id])
+    const commands = []
 
-    const commandWithProducts = {
-      ...rows[0],
-      products: rows.map((row) => ({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        product_price: row.product_price,
-        product_quantity: row.product_quantity,
-      })),
+    for (let row of rows[0]) {
+      const command = commands.find((command) => command.id === row.command_id)
+      console.log(command)
+      if (command) {
+        command.products.push({
+          product_id: row.product_id,
+          product_name: row.product_name,
+          product_price: row.product_price,
+          product_quantity: row.product_quantity,
+        })
+      } else {
+        commands.push({
+          id: row.command_id,
+          client_id: row.client_id,
+          total_price: row.total_price,
+          expedition_date: row.expedition_date,
+          delivery_date: row.delivery_date,
+          products: [
+            {
+              product_id: row.product_id,
+              product_name: row.product_name,
+              product_price: row.product_price,
+              product_quantity: row.product_quantity,
+            },
+          ],
+        })
+      }
     }
-
-    return commandWithProducts
+    return commands ? commands[0] : null
   } catch (err) {
     console.error("Error while fetching command by ID:", err)
     throw err
@@ -113,67 +158,124 @@ async function updateCommand(id, command) {
   const {
     client_id,
     total_price,
-    product_nb,
+    command_date,
     expedition_date,
     delivery_date,
     products,
   } = command
 
   try {
-    const queryUpdateCommand =
-      "UPDATE command SET client_id = ?, total_price = ?, product_nb = ?, expedition_date = ?, delivery_date = ? WHERE id = ?"
-    await db.execute(queryUpdateCommand, [
+    await db.execute("CALL updateCommand(?, ?, ?, ?, ?, ?)", [
+      id,
       client_id,
       total_price,
-      product_nb,
+      command_date,
       expedition_date,
       delivery_date,
-      id,
     ])
 
-    if (products && products.length > 0) {
-      const queryDeleteProductCmd =
-        "DELETE FROM product_cmd WHERE command_id = ?"
-      await db.execute(queryDeleteProductCmd, [id])
-      for (let product of products) {
-        const queryInsertProductCmd =
-          "INSERT INTO product_cmd (product_id, command_id) VALUES (?, ?)"
-        await db.execute(queryInsertProductCmd, [product.product_id, id])
+    for (let product of products) {
+      const { product_id, quantity } = product
+
+      try {
+        await db.execute("CALL checkAndUpdateStock(?, ?)", [
+          product_id,
+          quantity,
+        ])
+      } catch (err) {
+        return { error: err.message }
       }
     }
 
-    const queryGetCommand =
-      "SELECT c.*, cl.name AS client_name, cl.email AS client_email, " +
-      "p.id AS product_id, p.name AS product_name, p.price AS product_price, p.quantity AS product_quantity " +
-      "FROM command c " +
-      "JOIN product_cmd pc ON c.id = pc.command_id " +
-      "JOIN product p ON pc.product_id = p.id " +
-      "JOIN client cl ON c.client_id = cl.id WHERE c.id = ?"
-    const [rows] = await db.execute(queryGetCommand, [id])
+    await db.execute("CALL deleteProducts_command(?)", [id])
 
-    const commandWithProducts = {
-      ...rows[0],
-      products: rows.map((row) => ({
-        product_id: row.product_id,
-        product_name: row.product_name,
-        product_price: row.product_price,
-        product_quantity: row.product_quantity,
-      })),
+    for (let product of products) {
+      const { product_id, quantity } = product
+
+      await db.execute("CALL addProduct_command(?, ?, ?)", [
+        product_id,
+        id,
+        quantity,
+      ])
     }
-    return commandWithProducts
+
+    const [rows] = await db.execute("CALL getCommand(?)", [id])
+
+    const commands = []
+
+    for (let row of rows[0]) {
+      const command = commands.find((command) => command.id === row.command_id)
+      console.log(command)
+      if (command) {
+        command.products.push({
+          product_id: row.product_id,
+          product_name: row.product_name,
+          product_price: row.product_price,
+          product_quantity: row.product_quantity,
+        })
+      } else {
+        commands.push({
+          id: row.command_id,
+          client_id: row.client_id,
+          total_price: row.total_price,
+          expedition_date: row.expedition_date,
+          delivery_date: row.delivery_date,
+          products: [
+            {
+              product_id: row.product_id,
+              product_name: row.product_name,
+              product_price: row.product_price,
+              product_quantity: row.product_quantity,
+            },
+          ],
+        })
+      }
+    }
+    return commands ? commands[0] : null
   } catch (err) {
-    console.error("Error while updating command:", err)
+    console.error("Error while updating the command:", err)
     throw err
   }
 }
 
 async function deleteCommand(id) {
   try {
-    await db.execute("DELETE FROM product_cmd WHERE command_id = ?", [id])
-
-    await db.execute("DELETE FROM command WHERE id = ?", [id])
+    await db.execute("CALL deleteCommand(?)", [id])
   } catch (err) {
-    console.error("error while deletin command:", err)
+    console.error("Error while deleting command:", err)
+    throw err
+  }
+}
+
+async function filterCommandsByDates(start, end) {
+  try {
+    start = new Date(start).toISOString().slice(0, 19).replace("T", " ")
+    end = new Date(end).toISOString().slice(0, 19).replace("T", " ")
+    const [rows] = await db.execute("CALL getCommandsByDate(?, ?)", [
+      start,
+      end,
+    ])
+    return rows
+  } catch (err) {
+    console.error("Error while filtering commands by dates:", err)
+    throw err
+  }
+}
+
+async function getStats() {
+  try {
+    const [productsSoldRows] = await db.execute("CALL getStatsProductsSold()")
+    const productsSold = productsSoldRows[0][0].products_sold
+
+    const [totalSalesRows] = await db.execute("CALL getStatsTotalSales()")
+    const totalSales = totalSalesRows[0][0].total_sales
+
+    return {
+      productsSold,
+      totalSales,
+    }
+  } catch (err) {
+    console.error("Error while getting stats:", err)
     throw err
   }
 }
@@ -184,4 +286,6 @@ module.exports = {
   getCommandById,
   updateCommand,
   deleteCommand,
+  filterCommandsByDates,
+  getStats,
 }

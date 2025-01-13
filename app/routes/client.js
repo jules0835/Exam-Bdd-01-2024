@@ -6,6 +6,7 @@ const {
   updateClient,
   deleteClient,
   listClientCommands,
+  searchClients,
 } = require("../crud/client")
 
 const router = express.Router()
@@ -83,4 +84,17 @@ router.get("/client/:id/commands", async (req, res) => {
   }
 })
 
+router.get("/search/client/", async (req, res) => {
+  try {
+    const { q } = req.query
+    console.log("q received:", q)
+    const result = await searchClients(q)
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      message: "Error searching clients",
+    })
+  }
+})
 module.exports = router

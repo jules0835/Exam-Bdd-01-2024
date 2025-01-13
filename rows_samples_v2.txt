@@ -1,0 +1,102 @@
+USE paperplane;
+
+-- Insérer des clients
+INSERT INTO client (name, age, email, phone_nb, address) VALUES
+('Alice Dupont', 30, 'alice.dupont@example.com', 123456789, '123 Rue Principale'),
+('Bob Martin', 45, 'bob.martin@example.com', 987654321, '456 Avenue des Champs'),
+('Chloe Lambert', 25, 'chloe.lambert@example.com', 112233445, '789 Boulevard Saint-Michel'),
+('David Moreau', 35, 'david.moreau@example.com', 223344556, '12 Place Bellecour'),
+('Eve Petit', 40, 'eve.petit@example.com', 334455667, '34 Allée des Fleurs'),
+('Franck Legrand', 28, 'franck.legrand@example.com', 445566778, '56 Rue de la Gare'),
+('Gabrielle Marchand', 33, 'gabrielle.marchand@example.com', 556677889, '78 Avenue de la Paix'),
+('Hugo Leroy', 50, 'hugo.leroy@example.com', 667788990, '90 Boulevard Victor Hugo'),
+('Isabelle Simon', 38, 'isabelle.simon@example.com', 778899001, '11 Rue Lafayette'),
+('Julien Renault', 22, 'julien.renault@example.com', 889900112, '22 Rue des Lilas');
+
+-- Insérer des catégories
+INSERT INTO category (name) VALUES
+('Électronique'),
+('Maison'),
+('Jouets'),
+('Vêtements'),
+('Sport'),
+('Livres'),
+('Jardinage'),
+('Bricolage'),
+('Cuisine'),
+('Beauté');
+
+-- Insérer des fournisseurs
+INSERT INTO supplier (name, address, email, phone_nb) VALUES
+('Tech Supplies', '100 Rue de la Technologie', 'contact@techsupplies.com', 555123456),
+('Maison Pro', '200 Avenue Maison', 'info@maisonpro.com', 555654321),
+('Jouets Express', '300 Boulevard des Jouets', 'contact@jouetsexpress.com', 555987654),
+('Sport Zone', '400 Avenue des Sports', 'contact@sportzone.com', 555321654),
+('Livres & Co', '500 Rue des Libraires', 'info@livresetco.com', 555456789),
+('Jardin Plus', '600 Rue des Jardins', 'contact@jardinplus.com', 555789123),
+('Bricolage Direct', '700 Rue des Artisans', 'info@bricolagedirect.com', 555963852),
+('Cuisine Délices', '800 Rue Gourmande', 'info@cuisinedelices.com', 555741852),
+('Beauté Luxe', '900 Rue de la Mode', 'contact@beauteluxe.com', 555852963),
+('Gadget Pro', '1000 Boulevard High-Tech', 'info@gadgetpro.com', 555369258);
+
+-- Insérer des produits
+INSERT INTO product (name, price, quantity, category_id) VALUES
+('Téléphone', 499.99, 50, 1),
+('Tablette', 299.99, 30, 1),
+('Ordinateur Portable', 899.99, 20, 1),
+('Casque Audio', 149.99, 100, 1),
+('Aspirateur', 129.99, 30, 2),
+('Robot de Cuisine', 499.99, 10, 9),
+('Tondeuse', 249.99, 15, 7),
+('Perceuse', 99.99, 50, 8),
+('Set de Couteaux', 39.99, 100, 9),
+('Peluche', 19.99, 200, 3),
+('Ballon de Football', 24.99, 80, 5),
+('Vélo', 799.99, 10, 5),
+('Livre de Cuisine', 19.99, 120, 6),
+('Roman Policier', 12.99, 150, 6),
+('Parfum', 89.99, 40, 10),
+('Crème Hydratante', 29.99, 60, 10),
+('Lustre', 69.99, 25, 2),
+('Armoire', 299.99, 5, 2),
+('Lego', 99.99, 100, 3),
+('Doudoune', 59.99, 50, 4);
+
+-- Relier les produits aux fournisseurs
+INSERT INTO supplier_product (supplier_id, product_id) VALUES
+(1, 1), (1, 2), (1, 3), (1, 4), -- Tech Supplies fournit des produits électroniques
+(2, 5), (2, 17), (2, 18), -- Maison Pro fournit des produits pour la maison
+(3, 10), (3, 19), -- Jouets Express fournit des jouets
+(4, 11), (4, 12), -- Sport Zone fournit des articles de sport
+(5, 13), (5, 14), -- Livres & Co fournit des livres
+(6, 7), -- Jardin Plus fournit une tondeuse
+(7, 8), -- Bricolage Direct fournit une perceuse
+(8, 6), (8, 9), -- Cuisine Délices fournit des articles de cuisine
+(9, 15), (9, 16), -- Beauté Luxe fournit des produits de beauté
+(10, 20); -- Gadget Pro fournit une doudoune
+
+-- Insérer des commandes
+INSERT INTO command (client_id, total_price, command_date, expedition_date, delivery_date) VALUES
+(1, 149.99,'2025-01-10', '2025-01-11', '2025-01-13'), -- Commande d'un casque audio
+(2, 529.98, '2025-01-09', '2025-01-10', '2025-01-12'), -- Commande d'un téléphone et d'une tablette
+(3, 269.98, '2025-01-08', '2025-01-09', '2025-01-10'), -- Commande d'un ballon de football et d'une perceuse
+(4, 19.99, '2025-01-07', '2025-01-08', '2025-01-09'), -- Commande d'une peluche
+(5, 49.98, '2025-01-06', '2025-01-07', '2025-01-08'), -- Commande de deux livres
+(6, 329.98, '2025-01-05', '2025-01-06', '2025-01-07'), -- Commande d'un lustre et d'un set de couteaux
+(7, 799.99, '2025-01-04', '2025-01-05', '2025-01-06'), -- Commande d'un vélo
+(8, 149.98, '2025-01-03', '2025-01-04', '2025-01-05'), -- Commande de parfum et crème hydratante
+(9, 249.99, '2025-01-02', '2025-01-03', '2025-01-04'), -- Commande d'une tondeuse
+(10, 59.99, '2025-01-01', '2025-01-02', '2025-01-03'); -- Commande d'une doudoune
+
+-- Associer des produits aux commandes
+INSERT INTO product_cmd (product_id, command_id) VALUES
+(4, 1), -- Casque audio pour Alice Dupont
+(1, 2), (2, 2), -- Téléphone et tablette pour Bob Martin
+(11, 3), (8, 3), -- Ballon de football et perceuse pour Chloe Lambert
+(10, 4), -- Peluche pour David Moreau
+(13, 5), (14, 5), -- Deux livres pour Eve Petit
+(17, 6), (9, 6), -- Lustre et set de couteaux pour Franck Legrand
+(12, 7), -- Vélo pour Gabrielle Marchand
+(15, 8), (16, 8), -- Parfum et crème hydratante pour Hugo Leroy
+(7, 9), -- Tondeuse pour Isabelle Simon
+(20, 10); -- Doudoune pour Julien Renault
