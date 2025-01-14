@@ -1,291 +1,894 @@
-# API Endpoint for version 1.0.0
+# API Endpoint for version 2.0.0
 
-## Client
+# Category
 
-### GET /api/client
+## POST /category
 
-Get all clients with all of ther informations.  
-**Example Response**:
-
-```json
-[
+- **Description** : Permet de créer une nouvelle catégorie dans la base de donnée.
+- **Méthode** : POST
+- **Corps attendu** (JSON) :
+  ```json
+  {
+    "name": "nom de la categorie"
+  }
+  ```
+- **Exemple de retour** :
+  ```json
   {
     "id": 1,
-    "name": "John Doe",
+    "name": "nom de la categorie"
+  }
+  ```
+
+---
+
+## GET /category
+
+- **Description** : Récupére la liste de toutes les catégories.
+- **Méthode** : GET
+- **Exemple de retour** :
+  ```json
+  [
+    { "id": 1, "name": "nom de la categorie 1" },
+    { "id": 2, "name": "nom de la categorie 2" }
+  ]
+  ```
+
+---
+
+## GET /category/:id
+
+- **Description** : Récupére une categorie par son ID.
+- **Méthode** : GET
+- **Paramètre URL** :
+  - `id` : Identifiant unique de la catégorie.
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nom de la categorie"
+  }
+  ```
+
+---
+
+## PUT /category/:id
+
+- **Description** : Modifie une catégorie existante avec des nouvelles données.
+- **Méthode** : PUT
+- **Paramètre URL** :
+  - `id` : Identifiant unique de la catégorie.
+- **Corps attendu** (JSON) :
+  ```json
+  {
+    "name": "nouveau nom de la categorie"
+  }
+  ```
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nouveau nom de la categorie"
+  }
+  ```
+
+---
+
+## DELETE /category/:id
+
+- **Description** : Supprime une catégorie en fonction de son ID.
+- **Méthode** : DELETE
+- **Paramètre URL** :
+  - `id` : Identifiant unique de la catégorie.
+- **Exemple de retour** : Pas de contenu (204).
+
+---
+
+## GET /search/category
+
+- **Description** : Recherche des catégories en fonction d’un terme donné.
+- **Méthode** : GET
+- **Paramètre Query** :
+  - `q` : Terme de recherche.
+- **Exemple de retour** :
+  ```json
+  [
+    { "id": 1, "name": "categorie correspondant" },
+    { "id": 3, "name": "autre resultat" }
+  ]
+  ```
+
+---
+
+# Product
+
+## POST /client
+
+- **Description** : Ajoute un noveau client dans la base de donnée.
+- **Méthode** : POST
+- **Corps attendu** (JSON) :
+  ```json
+  {
+    "name": "nom du client",
+    "age": 30,
+    "email": "client@example.com",
+    "phone_nb": "0123456789",
+    "address": "adresse du client"
+  }
+  ```
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nom du client",
+    "age": 30,
+    "email": "client@example.com",
+    "phone_nb": "0123456789",
+    "address": "adresse du client"
+  }
+  ```
+
+---
+
+## GET /client
+
+- **Description** : Retourne la liste de touts les clients.
+- **Méthode** : GET
+- **Exemple de retour** :
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "nom du client",
+      "age": 30,
+      "email": "client1@example.com",
+      "phone_nb": "0123456789",
+      "address": "adresse client 1"
+    },
+    {
+      "id": 2,
+      "name": "autre client",
+      "age": 25,
+      "email": "client2@example.com",
+      "phone_nb": "0987654321",
+      "address": "adresse client 2"
+    }
+  ]
+  ```
+
+---
+
+## GET /client/:id
+
+- **Description** : Recupére les infos d’un client par son ID.
+- **Méthode** : GET
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du client.
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nom du client",
+    "age": 30,
+    "email": "client@example.com",
+    "phone_nb": "0123456789",
+    "address": "adresse client"
+  }
+  ```
+
+---
+
+## PUT /client/:id
+
+- **Description** : Met à jour les infos d’un client existant.
+- **Méthode** : PUT
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du client.
+- **Corps attendu** (JSON) :
+  ```json
+  {
+    "name": "nouveau nom",
     "age": 35,
-    "email": "john.doe@example.com",
-    "phone_nb": 123456789,
-    "address": "123 Main Street"
-  },
-  {
-    "id": 2,
-    "name": "Jane Smith",
-    "age": 29,
-    "email": "jane.smith@example.com",
-    "phone_nb": 987654321,
-    "address": "456 Elm Street"
+    "email": "nouveau@example.com",
+    "phone_nb": "9876543210",
+    "address": "nouvelle adresse"
   }
-]
-```
-
----
-
-### GET /api/client/id?id={id}
-
-Get a client by its id with all of ther informations.  
-**Example Request**:  
-`GET /api/client/id?id=1`
-
-**Example Response**:
-
-```json
-{
-  "id": 1,
-  "name": "John Doe",
-  "age": 35,
-  "email": "john.doe@example.com",
-  "phone_nb": 123456789,
-  "address": "123 Main Street"
-}
-```
-
----
-
-### POST /api/client
-
-Create a new client.  
-**Required Fields**:
-
-- `name` (string)
-- `age` (integer)
-- `email` (string)
-- `phone_nb` (integer)
-- `address` (string)
-
-**Example Request**:
-
-```json
-{
-  "name": "Alice Brown",
-  "age": 42,
-  "email": "alice.brown@example.com",
-  "phone_nb": 654321987,
-  "address": "789 Pine Street"
-}
-```
-
-**Example Response**:
-
-```json
-{
-  "message": "Client created successfully",
-  "client_id": 3
-}
-```
-
----
-
-## Category
-
-### GET /api/category
-
-Get all categories with all ther informations.  
-**Example Response**:
-
-```json
-[
+  ```
+- **Exemple de retour** :
+  ```json
   {
     "id": 1,
-    "name": "Electronics"
-  },
-  {
-    "id": 2,
-    "name": "Books"
+    "name": "nouveau nom",
+    "age": 35,
+    "email": "nouveau@example.com",
+    "phone_nb": "9876543210",
+    "address": "nouvelle adresse"
   }
-]
-```
+  ```
 
 ---
 
-### POST /api/category
+## DELETE /client/:id
 
-Create a new category.  
-**Required Fields**:
-
-- `name` (string)
-
-**Example Request**:
-
-```json
-{
-  "name": "Toys"
-}
-```
-
-**Example Response**:
-
-```json
-{
-  "message": "Category created successfully",
-  "category_id": 3
-}
-```
+- **Description** : Supprime un client de la base de données.
+- **Méthode** : DELETE
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du client.
+- **Exemple de retour** : Pas de contenu (204).
 
 ---
 
-## Supplier
+## GET /client/:id/commands
 
-### GET /api/supplier/:id
-
-Get a supplier by its id with all ther informations.  
-**Example Request**:  
-`GET /api/supplier/1`
-
-**Example Response**:
-
-```json
-{
-  "id": 1,
-  "name": "Tech Corp",
-  "email": "support@techcorp.com",
-  "phone_nb": 123456789,
-  "address": "101 Tech Street"
-}
-```
-
----
-
-## Product
-
-### POST /api/product
-
-Create a new product.  
-**Required Fields**:
-
-- `name` (string)
-- `price` (float)
-- `category_id` (integer)
-- `supplier_id` (integer)
-
-**Example Request**:
-
-```json
-{
-  "name": "Smartphone",
-  "price": 699.99,
-  "category_id": 1,
-  "supplier_id": 1
-}
-```
-
-**Example Response**:
-
-```json
-{
-  "message": "Product created successfully",
-  "product_id": 1
-}
-```
+- **Description** : Liste les commandes associées à un client donné.
+- **Méthode** : GET
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du client.
+- **Exemple de retour** :
+  ```json
+  [
+    {
+      "command_id": 101,
+      "date": "2023-01-01",
+      "products": [
+        {
+          "product_id": 1,
+          "product_name": "produit A",
+          "product_price": 10,
+          "product_quantity": 2
+        },
+        {
+          "product_id": 2,
+          "product_name": "produit B",
+          "product_price": 20,
+          "product_quantity": 1
+        }
+      ]
+    }
+  ]
+  ```
 
 ---
 
-## Command
+## GET /search/client
 
-### GET /api/command/id?id={id}
+- **Description** : Recherche des clients en fonction d’un terme.
+- **Méthode** : GET
+- **Paramètre Query** :
+  - `q` : Terme de recherche.
+- **Exemple de retour** :
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "nom du client",
+      "email": "client@example.com"
+    },
+    {
+      "id": 3,
+      "name": "autre nom",
+      "email": "autre@example.com"
+    }
+  ]
+  ```
 
-Get a command by its id with all ther informations.  
-**Example Request**:  
-`GET /api/command/id?id=1`
+---
 
-**Example Response**:
+# Supplier
 
-```json
-{
-  "id": 1,
-  "client_id": 1,
-  "total_price": 199.99,
-  "expedition_date": "2025-01-10",
-  "delivery_date": "2025-01-15",
-  "products": [
+## POST /supplier
+
+- **Description** : Ajoute un nouveau fournisseur dans la base de donnée.
+- **Méthode** : POST
+- **Corps attendu** (JSON) :
+
+  ```json
+  {
+    "name": "nom du fournisseur",
+    "address": "adresse du fournisseur",
+    "email": "fournisseur@example.com",
+    "phone_nb": "0123456789"
+  }
+  ```
+
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nom du fournisseur",
+    "address": "adresse du fournisseur",
+    "email": "fournisseur@example.com",
+    "phone_nb": "0123456789"
+  }
+  ```
+
+---
+
+## GET /supplier
+
+- **Description** : Retourne la liste de touts les fournisseurs.
+- **Méthode** : GET
+- **Exemple de retour** :
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "fournisseur 1",
+      "address": "adresse fournisseur 1",
+      "email": "fournisseur1@example.com",
+      "phone_nb": "0123456789"
+    },
+    {
+      "id": 2,
+      "name": "fournisseur 2",
+      "address": "adresse fournisseur 2",
+      "email": "fournisseur2@example.com",
+      "phone_nb": "0987654321"
+    }
+  ]
+  ```
+
+---
+
+## GET /supplier/:id
+
+- **Description** : Recupére les infos d’un fournisseur par son ID.
+- **Méthode** : GET
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du fournisseur.
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nom du fournisseur",
+    "address": "adresse fournisseur",
+    "email": "fournisseur@example.com",
+    "phone_nb": "0123456789"
+  }
+  ```
+
+---
+
+## PUT /supplier/:id
+
+- **Description** : Met à jour les infos d’un fournisseur existant.
+- **Méthode** : PUT
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du fournisseur.
+- **Corps attendu** (JSON) :
+  ```json
+  {
+    "name": "nouveau nom",
+    "address": "nouvelle adresse",
+    "email": "nouveau@example.com",
+    "phone_nb": "9876543210"
+  }
+  ```
+- **Exemple de retour** :
+  ```json
+  {
+    "id": 1,
+    "name": "nouveau nom",
+    "address": "nouvelle adresse",
+    "email": "nouveau@example.com",
+    "phone_nb": "9876543210"
+  }
+  ```
+
+---
+
+## DELETE /supplier/:id
+
+- **Description** : Supprime un fournisseur de la base de données.
+- **Méthode** : DELETE
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du fournisseur.
+- **Exemple de retour** : Pas de contenu (204).
+
+---
+
+## GET /supplier/:id/products
+
+- **Description** : Liste les produits associés à un fournisseur donné.
+- **Méthode** : GET
+- **Paramètre URL** :
+  - `id` : L’identifiant unique du fournisseur.
+- **Exemple de retour** :
+  ```json
+  [
     {
       "product_id": 1,
-      "name": "Smartphone",
-      "price": 699.99,
-      "quantity": 1
+      "product_name": "Produit A",
+      "product_price": 10.5,
+      "product_quantity": 50
     },
     {
       "product_id": 2,
-      "name": "Laptop",
-      "price": 1299.99,
-      "quantity": 1
+      "product_name": "Produit B",
+      "product_price": 20,
+      "product_quantity": 30
     }
   ]
-}
+  ```
 
+---
 
+## GET /search/supplier
 
-And for all of the endpoint, there is PUT and DELETE methods to update and delete the data.
+- **Description** : Recherche des fournisseurs en fonction d’un terme.
+- **Méthode** : GET
+- **Paramètre Query** :
+  - `q` : Terme de recherche.
+- **Exemple de retour** :
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "fournisseur recherché",
+      "address": "adresse fournisseur",
+      "email": "fournisseur@example.com"
+    }
+  ]
+  ```
 
-For the PUT method, the request body is the same as the POST method.
+# Product
 
-For the DELETE method, the request params is the same as the GET method.
-```
+## POST /product
 
-Pour la V2 :
-Corriger les injections SQL
-Ajouter des tests de données lors de l'envoie de données
-Modifié les information renvoyer en cas de chose qui n'existe pas
-Ajouter un controle du stock et plus de logique métier (calcul de prix, de stock, etc...)
-Ajouter un système de clé api pour les requêtes
-A rajouter :
+- **Description**: Crée un nouveau produit dans la base de données.
+- **Method**: POST
+- **Request Body** (JSON):
 
-1. Lister les commandes par année
-   Ex. GET /commandes?start=2023-01-01&end=2023-12-31
-2. Rechercher les commandes d’un client
-   Ex. GET /clients/:id/commandes (existe déjà dans la v1 pour nous. Amélioration ??)
-3. Lister les commandes qui contiennent un article précis
-   Ex. GET /produits/:id/commandes
-4. Recherche multi-critères (client, date, statut, produit...) (ajouter un endpoint spécial pour la recherch qui tapera dans toutes les tables)
-5. Statistiques simples (produits les plus vendus, total des ventes sur une période...)
-6. Gestion fine du stock (décrémentation automatique, blocage si insuffisant...)
-7. Notifications de stock faible (ex. GET /produits/stock-faible?seuil=10).
+  ```json
+  {
+    "name": "Product name",
+    "price": 100.0,
+    "category_id": 1,
+    "supplier_id": 2,
+    "quantity": 50,
+    "description": "Short description of the product"
+  }
+  ```
 
-Procédures suplémentaire :
-Récupération des commandes par date
-nom : getCommandsByDate
-params : start, end
+- **Response Example**:
+  ```json
+  {
+    "id": 1,
+    "name": "Product name",
+    "price": 100.0,
+    "category_id": 1,
+    "supplier_id": 2,
+    "quantity": 50,
+    "description": "Short description of the product"
+  }
+  ```
 
-Recupération des commandes qui contiennent un article précis
-nom : getCommandsByProduct
-params : product_id
+---
 
-Recherche multi-critères
-nom : search
-param: un string de recherche
-Pour les tables : client, category, supplier, product, command, faire une
-procédure qui permet la recherche dans les lignes avec like %param% et retourne les résultats
+## GET /product
 
-Statistiques produits les plus vendus
-nom : getStatsProductsSold
-params : start, end
-Retourne les produits les plus vendus sur une période
+- **Description**: Retourne la liste de tous les produits.
+- **Method**: GET
+- **Response Example**:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Product A",
+      "price": 100.0,
+      "category_id": 1,
+      "quantity": 50,
+      "description": "Description of Product A"
+    },
+    {
+      "id": 2,
+      "name": "Product B",
+      "price": 200.0,
+      "category_id": 2,
+      "quantity": 30,
+      "description": "Description of Product B"
+    }
+  ]
+  ```
 
-Statistiques total des ventes sur une période
-nom : getStatsTotalSales
-params : start, end
-Retourne le total des ventes sur une période par produit
+---
 
-Statistiques total des ventes par produit
-nom : getStatsTotalSalesByProduct
-params : start, end
-Retourne le total des ventes sur une période par produit
+## GET /product/:id
 
-Gestion fine du stock
-nom : updateStock
-params : product_id, quantity, type(inc, dec)
-Permet de mettre à jour le stock d'un produit
+- **Description**: Retrouve un produit en fonction de son ID.
+- **Method**: GET
+- **URL Parameters**:
+  - `id`: Identifiant unique du produit.
+- **Response Example**:
+  ```json
+  {
+    "id": 1,
+    "name": "Product A",
+    "price": 100.0,
+    "category_id": 1,
+    "quantity": 50,
+    "description": "Description of Product A"
+  }
+  ```
 
-Notifications de stock faible
-nom : getLowStock
-params : seuil
-Retourne les produits qui ont un stock inférieur au seuil
+---
+
+## PUT /product/:id
+
+- **Description**: Mis à jour d'un produit existant.
+- **Method**: PUT
+- **URL Parameters**:
+  - `id`: Id unique du produit.
+- **Request Body** (JSON):
+  ```json
+  {
+    "name": "Updated Product Name",
+    "price": 120.0,
+    "category_id": 1,
+    "supplier_id": 3,
+    "quantity": 40,
+    "description": "Updated description of the product"
+  }
+  ```
+- **Response Example**:
+  ```json
+  {
+    "id": 1,
+    "name": "Updated Product Name",
+    "price": 120.0,
+    "category_id": 1,
+    "quantity": 40,
+    "description": "Updated description of the product"
+  }
+  ```
+
+---
+
+## DELETE /product/:id
+
+- **Description**: Supprimer un produit de la base de données en fonction de son ID.
+- **Method**: DELETE
+- **URL Parameters**:
+  - `id`: Identifiant unique du produit.
+- **Response**: No content (204).
+
+---
+
+## GET /product/:id/command
+
+- **Description**: Retrouve les commandes associées à un produit donné.
+- **Method**: GET
+- **URL Parameters**:
+  - `id`: Id unique du produit.
+- **Response Example**:
+  ```json
+  [
+    {
+      "command_id": 1,
+      "customer_id": 5,
+      "quantity": 10,
+      "command_date": "2023-12-01"
+    },
+    {
+      "command_id": 2,
+      "customer_id": 3,
+      "quantity": 5,
+      "command_date": "2023-12-05"
+    }
+  ]
+  ```
+
+---
+
+## GET /search/product
+
+- **Description**: Recherche des produits en fonction d'un terme donné.
+- **Method**: GET
+- **Query Parameters**:
+  - `q`: Nom du produit.
+- **Response Example**:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Product A",
+      "category_id": 1,
+      "price": 100.0,
+      "quantity": 50,
+      "description": "Description of Product A"
+    }
+  ]
+  ```
+
+---
+
+## GET /stock/notification
+
+- **Description**: Retrouve les produits dont le stock est inférieur à un seuil donné.
+- **Method**: GET
+- **Query Parameters**:
+  - `seuil`: Seuil de stock minimum.
+- **Response Example**:
+  ```json
+  [
+    {
+      "id": 2,
+      "name": "Product B",
+      "category_id": 2,
+      "price": 200.0,
+      "quantity": 5,
+      "description": "Description of Product B"
+    }
+  ]
+  ```
+
+---
+
+# Command
+
+## POST /command
+
+Créer une nouvelle commande.
+
+- **Description** :
+  Crée une nouvelle commande pour un client spécifique avec une liste de produits.
+
+- **Requête** :
+
+  - **Méthode** : `POST`
+  - **Corps de la requête (JSON)** :
+    ```json
+    {
+      "client_id": 1,
+      "products": [
+        {
+          "product_id": 101,
+          "quantity": 2
+        },
+        {
+          "product_id": 102,
+          "quantity": 5
+        }
+      ]
+    }
+    ```
+  - **Paramètres** : Aucun
+
+- **Réponse** :
+  - **Statut HTTP** : `201 Created`
+  - **Body (JSON)** :
+    ```json
+    [
+      {
+        "id": 1,
+        "client_id": 1,
+        "total_price": 150.0,
+        "expedition_date": "2023-12-01",
+        "delivery_date": "2023-12-05",
+        "products": [
+          {
+            "product_id": 101,
+            "product_name": "Product A",
+            "product_price": 50.0,
+            "product_quantity": 2
+          },
+          {
+            "product_id": 102,
+            "product_name": "Product B",
+            "product_price": 10.0,
+            "product_quantity": 5
+          }
+        ]
+      }
+    ]
+    ```
+
+---
+
+## GET /command
+
+Lister toutes les commandes.
+
+- **Description** :
+  Récupère toutes les commandes disponibles avec leurs produits associés.
+
+- **Requête** :
+
+  - **Méthode** : `GET`
+  - **Paramètres** : Aucun
+
+- **Réponse** :
+  - **Statut HTTP** : `200 OK`
+  - **Body (JSON)** :
+    ```json
+    [
+      {
+        "id": 1,
+        "client_id": 1,
+        "total_price": 150.0,
+        "expedition_date": "2023-12-01",
+        "delivery_date": "2023-12-05",
+        "products": [
+          {
+            "product_id": 101,
+            "product_name": "Product A",
+            "product_price": 50.0,
+            "product_quantity": 2
+          },
+          {
+            "product_id": 102,
+            "product_name": "Product B",
+            "product_price": 10.0,
+            "product_quantity": 5
+          }
+        ]
+      }
+    ]
+    ```
+
+---
+
+## GET /command/:id
+
+Récupérer une commande spécifique.
+
+- **Description** :
+  Retourne les détails d’une commande spécifique identifiée par son ID.
+
+- **Requête** :
+
+  - **Méthode** : `GET`
+  - **Paramètres d’URL** : `id` (ID de la commande)
+
+- **Réponse** :
+  - **Statut HTTP** : `200 OK`
+  - **Body (JSON)** :
+    ```json
+    {
+      "id": 1,
+      "client_id": 1,
+      "total_price": 150.0,
+      "expedition_date": "2023-12-01",
+      "delivery_date": "2023-12-05",
+      "products": [
+        {
+          "product_id": 101,
+          "product_name": "Product A",
+          "product_price": 50.0,
+          "product_quantity": 2
+        }
+      ]
+    }
+    ```
+
+---
+
+## PUT /command/:id
+
+Mettre à jour une commande.
+
+- **Description** :
+  Met à jour les informations d'une commande existante et ses produits.
+
+- **Requête** :
+
+  - **Méthode** : `PUT`
+  - **Paramètres d’URL** : `id` (ID de la commande)
+  - **Corps de la requête (JSON)** :
+    ```json
+    {
+      "client_id": 1,
+      "total_price": 200.0,
+      "command_date": "2023-12-01",
+      "expedition_date": "2023-12-03",
+      "delivery_date": "2023-12-07",
+      "products": [
+        {
+          "product_id": 101,
+          "quantity": 3
+        },
+        {
+          "product_id": 102,
+          "quantity": 6
+        }
+      ]
+    }
+    ```
+
+- **Réponse** :
+  - **Statut HTTP** : `200 OK`
+  - **Body (JSON)** : Même format que la réponse de création.
+
+---
+
+## DELETE /command/:id
+
+Supprimer une commande.
+
+- **Description** :
+  Supprime une commande existante de la base de données.
+
+- **Requête** :
+
+  - **Méthode** : `DELETE`
+  - **Paramètres d’URL** : `id` (ID de la commande)
+
+- **Réponse** :
+  - **Statut HTTP** : `204 No Content`
+  - **Body** : Aucun
+
+---
+
+## GET /filter/getbydates/command
+
+Filtrer les commandes par dates.
+
+- **Description** :
+  Récupère les commandes placées entre deux dates.
+
+- **Requête** :
+
+  - **Méthode** : `GET`
+  - **Paramètres de requête** :
+    - `start` (date de début, format : `YYYY-MM-DD`)
+    - `end` (date de fin, format : `YYYY-MM-DD`)
+
+- **Réponse** :
+  - **Statut HTTP** : `200 OK`
+  - **Body (JSON)** : Format identique à la réponse de la liste des commandes.
+
+---
+
+## GET /stats/command
+
+Obtenir des statistiques sur les commandes.
+
+- **Description** :
+  Retourne des statistiques globales sur les commandes, les produits vendus et les ventes totales.
+
+- **Requête** :
+
+  - **Méthode** : `GET`
+  - **Paramètres** : Aucun
+
+- **Réponse** :
+  - **Statut HTTP** : `200 OK`
+  - **Body (JSON)** :
+    ```json
+    {
+      "productsSold": "21",
+      "totalSales": "7319.64",
+      "totalSalesByProduct": [
+        {
+          "product_id": 19,
+          "product_name": "Lego",
+          "category_name": "Jouets",
+          "total_sold": "6",
+          "total_revenue": "599.94"
+        },
+        {
+          "product_id": 61,
+          "product_name": "Product name 1 etvvo",
+          "category_name": "Électronique",
+          "total_sold": "15",
+          "total_revenue": "1500.00"
+        }
+      ],
+      "totalSalesByCategory": [
+        {
+          "category_id": 1,
+          "category_name": "Électronique",
+          "total_sold": "15",
+          "total_revenue": "1500.00"
+        },
+        {
+          "category_id": 3,
+          "category_name": "Jouets",
+          "total_sold": "6",
+          "total_revenue": "599.94"
+        }
+      ]
+    }
+    ```
+
+---

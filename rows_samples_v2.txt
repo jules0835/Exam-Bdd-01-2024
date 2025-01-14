@@ -89,14 +89,14 @@ INSERT INTO command (client_id, total_price, command_date, expedition_date, deli
 (10, 59.99, '2025-01-01', '2025-01-02', '2025-01-03'); -- Commande d'une doudoune
 
 -- Associer des produits aux commandes
-INSERT INTO product_cmd (product_id, command_id) VALUES
-(4, 1), -- Casque audio pour Alice Dupont
-(1, 2), (2, 2), -- Téléphone et tablette pour Bob Martin
-(11, 3), (8, 3), -- Ballon de football et perceuse pour Chloe Lambert
-(10, 4), -- Peluche pour David Moreau
-(13, 5), (14, 5), -- Deux livres pour Eve Petit
-(17, 6), (9, 6), -- Lustre et set de couteaux pour Franck Legrand
-(12, 7), -- Vélo pour Gabrielle Marchand
-(15, 8), (16, 8), -- Parfum et crème hydratante pour Hugo Leroy
-(7, 9), -- Tondeuse pour Isabelle Simon
-(20, 10); -- Doudoune pour Julien Renault
+INSERT INTO product_cmd (product_id, command_id, quantity) VALUES
+(4, 1, 2), -- Casque audio pour Alice Dupont
+(1, 2,1), (2, 2,5), -- Téléphone et tablette pour Bob Martin
+(11, 3,1), (8, 3,2), -- Ballon de football et perceuse pour Chloe Lambert
+(10, 4,1), -- Peluche pour David Moreau
+(13, 5,4), (14, 5,4), -- Deux livres pour Eve Petit
+(17, 6,2), (9, 6,7), -- Lustre et set de couteaux pour Franck Legrand
+(12, 7,7), -- Vélo pour Gabrielle Marchand
+(15, 8,7), (16, 8,8), -- Parfum et crème hydratante pour Hugo Leroy
+(7, 9,2), -- Tondeuse pour Isabelle Simon
+(20, 10,5); -- Doudoune pour Julien Renault
