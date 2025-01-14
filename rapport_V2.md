@@ -30,3 +30,5 @@ supplier est lié a supplier_product, qui connecte les fournisseurs avec les pro
 Il y a aussi des déclencheurs (trigger, disponible a la fin du script de création) pour calculer automatiquement le prix total d'une commande dès qu'on ajoute un nouveau produit a cette commande.
 
 Vous pouvez trouvr la liste des endpoints dans api_endpont_V2.md.
+
+Pour aller plus loin avec une possible V3 :

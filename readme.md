@@ -17,3 +17,21 @@ Pour lancer l'api :
 5. Vous pouvez maintenant utiliser les endpoints de l'api.
 
 Vous pouvez trouvr la liste des endpoints dans `api_endpont_V2.md`.
+
+1. Utiliser un ORM (Sequelize, TypeORM...) pour automatiser la gestion des tables et des
+   requêtes.
+
+Je passerais a une base PostgreSQL pour la V3, et j'utiliserais TypeORM pour gérer les tables et les requêtes, on evitera ainsi les erreurs de syntaxe SQL, les failles de sécurité et la creation de requetes/procédures SQL manuellement.
+
+2. Mettre en place de la sécurité (authentification via sessions/cookies ou JWT),
+
+Pour une securite simple je mettrais en place une authentification via JWT, pour une securite plus avancée je mettrais en place une authentification via des providers comme Google, Facebook, etc.
+
+3. Gérer des rôles de façon plus fine (admin, user...)
+
+Je mettrais en place des roles pour les utilisateurs, avec des roles admin et user, et je mettrais en place des permissions pour chaque role via le systeme de connexion cree juste au dessus.
+
+4. Préparer un frontend (React, Vue, etc.) – mais ce n’est pas obligatoire à ce stade.
+
+J'utiliserais NextJs pour le frontend et l'api, pour avoir un rendu rapide et une gestion des routes plus simple.
+NextJs permetrai d'eviter d'avoir 2 serveurs distincts pour l'api et le frontend, et permettrais de faire du server side rendering pour ameliorer le SEO.
