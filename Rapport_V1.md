@@ -10,11 +10,12 @@ L'application utilise des requêtes SQL construites à partir de chaînes de car
 
 Nous allons tenté d'injecter du code SQL pour récupérer des données que l'endpoint ne devrait pas nous donner de cette façon.
 
+[VOIR PHOTO JOITNE DANS LE REPO] - injection.png
+
 Dans cette requête, nous allons essayer de récupérer les données du premier produit de la table products aulieu de récupérer les données du produit avec l'id 3.
 Cela montre qu'il est possible de récupérer des données sensibles de la base de données. Cette attaque précise est une attaque de type "SQL Injection".
 Cette vultnérabilité est très dangereuse car elle permet à un attaquant de récupérer des données sensibles de la base de données.
 Si nous avion ajouté une option de connexion à l'application, l'attaquant aurait pu utilis cette faille se connecter en tant qu'admin.
-
 
 1.2 Manque de validation des champs
 
