@@ -4,7 +4,12 @@ async function createProduct(product) {
   const { name, price, category_id, supplier_id, quantity, description } =
     product
   try {
-    console.log("product:", product)
+    if (!name || !price || !category_id || !quantity || !description) {
+      throw new Error("Invalid product data")
+    }
+    if (typeof price !== "number" || typeof category_id !== "number") {
+      throw new Error("Invalid product data")
+    }
 
     const [result] = await db.execute("CALL addProduct(?, ?, ?, ?, ?)", [
       name,
@@ -44,6 +49,10 @@ async function listProducts() {
 
 async function getProductById(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid product ID")
+    }
+
     const [rows] = await db.execute("CALL getProduct(?)", [id])
     return rows[0]
   } catch (err) {
@@ -56,6 +65,12 @@ async function updateProduct(id, product) {
   const { name, price, quantity, category_id, supplier_id, description } =
     product
   try {
+    if (!name || !price || !quantity || !category_id || !description) {
+      throw new Error("Invalid product data")
+    }
+    if (typeof price !== "number" || typeof category_id !== "number") {
+      throw new Error("Invalid products data")
+    }
     await db.execute("CALL updateProduct(?, ?, ?, ?, ?,?)", [
       id,
       name,
@@ -79,6 +94,10 @@ async function updateProduct(id, product) {
 
 async function deleteProduct(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid product  ID")
+    }
+
     // Il n'est pas possible de supprimer un produit qui a été commandé
     await db.execute("CALL deleteSupplierProduct(?)", [id])
     await db.execute("CALL deleteProduct(?)", [id])
@@ -90,6 +109,10 @@ async function deleteProduct(id) {
 
 async function listCommandsByProductId(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid product ID")
+    }
+
     const [rows] = await db.execute("CALL getCommandsByProduct(?)", [id])
     return rows[0]
   } catch (err) {
@@ -100,6 +123,9 @@ async function listCommandsByProductId(id) {
 
 async function getLowStockProducts(seuil) {
   try {
+    if (!seuil || typeof seuil !== "number") {
+      throw new Error("Invalid or missing 'seuil'")
+    }
     const [rows] = await db.execute("CALL getLowStock(?)", [seuil])
     return rows[0]
   } catch (err) {
@@ -110,6 +136,9 @@ async function getLowStockProducts(seuil) {
 
 async function searchProduct(q) {
   try {
+    if (!q || typeof q !== "string") {
+      throw new Error("Invalid or missing 'q'")
+    }
     const [rows] = await db.execute("CALL searchProduct(?)", [q])
     return rows[0]
   } catch (err) {

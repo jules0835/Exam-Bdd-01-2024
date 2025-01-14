@@ -4,6 +4,13 @@ async function createCommand(command) {
   const { client_id, products } = command
 
   try {
+    if (!client_id || typeof client_id !== "number") {
+      throw new Error("Invalid client ID")
+    }
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      throw new Error("Invalid productrs")
+    }
+
     for (let product of products) {
       const { product_id, quantity } = product
 
@@ -115,6 +122,9 @@ async function listCommands() {
 
 async function getCommandById(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid cocmmand ID")
+    }
     const [rows] = await db.execute("CALL getCommand(?)", [id])
 
     const commands = []
@@ -165,6 +175,28 @@ async function updateCommand(id, command) {
   } = command
 
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid command ID")
+    }
+    if (!client_id || typeof client_id !== "number") {
+      throw new Error("Invalid client ID")
+    }
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      throw new Error("Invalid products")
+    }
+    if (!total_price || typeof total_price !== "number") {
+      throw new Error("Invalid total price")
+    }
+    if (!command_date || typeof command_date !== "string") {
+      throw new Error("Invalid command date")
+    }
+    if (!expedition_date || typeof expedition_date !== "string") {
+      throw new Error("Invalid expedition date")
+    }
+    if (!delivery_date || typeof delivery_date !== "string") {
+      throw new Error("Invalid delivery date")
+    }
+
     await db.execute("CALL updateCommand(?, ?, ?, ?, ?, ?)", [
       id,
       client_id,
@@ -240,6 +272,9 @@ async function updateCommand(id, command) {
 
 async function deleteCommand(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid command")
+    }
     await db.execute("CALL deleteCommand(?)", [id])
   } catch (err) {
     console.error("Error while deleting command:", err)
@@ -249,6 +284,9 @@ async function deleteCommand(id) {
 
 async function filterCommandsByDates(start, end) {
   try {
+    if (!start || !end) {
+      throw new Error("Invalid dates")
+    }
     start = new Date(start).toISOString().slice(0, 19).replace("T", " ")
     end = new Date(end).toISOString().slice(0, 19).replace("T", " ")
     const [rows] = await db.execute("CALL getCommandsByDate(?, ?)", [

@@ -3,6 +3,9 @@ const db = require("../utils/db")
 async function createSupplier(supplier) {
   const { name, address, email, phone_nb } = supplier
   try {
+    if (!name || !address || !email || !phone_nb) {
+      throw new Error("Invalid supplier data")
+    }
     const [result] = await db.execute("CALL addSupplier(?, ?, ?, ?)", [
       name,
       address,
@@ -32,6 +35,9 @@ async function listSuppliers() {
 
 async function getSupplierById(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid supplier ID")
+    }
     const [rows] = await db.execute("CALL getSupplier(?)", [id])
     return rows[0]
   } catch (err) {
@@ -43,6 +49,12 @@ async function getSupplierById(id) {
 async function updateSupplier(id, supplier) {
   const { name, address, email, phone_nb } = supplier
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid supplier ID")
+    }
+    if (!name || !address || !email || !phone_nb) {
+      throw new Error("Invalid supplier data")
+    }
     await db.execute("CALL updateSupplier(?, ?, ?, ?, ?)", [
       id,
       name,
@@ -61,6 +73,9 @@ async function updateSupplier(id, supplier) {
 
 async function deleteSupplier(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid supplier ID")
+    }
     await db.execute("CALL deleteSupplier(?)", [id])
   } catch (err) {
     console.error("Error while deleting supplier:", err)
@@ -70,6 +85,9 @@ async function deleteSupplier(id) {
 
 async function getSupplierProducts(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid supplier ID")
+    }
     const [rows] = await db.execute("CALL getSupplierProducts(?)", [id])
     return rows[0]
   } catch (err) {
@@ -80,6 +98,9 @@ async function getSupplierProducts(id) {
 
 async function searchSupplier(q) {
   try {
+    if (!q || typeof q !== "string") {
+      throw new Error("Invalid search query")
+    }
     const [rows] = await db.execute("CALL searchSupplier(?)", [q])
     return rows
   } catch (err) {

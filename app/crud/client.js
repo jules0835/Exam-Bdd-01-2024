@@ -3,6 +3,23 @@ const db = require("../utils/db")
 async function createClient(client) {
   try {
     const { name, age, email, phone_nb, address } = client
+
+    if (!name || typeof name !== "string") {
+      throw new Error("Invalid o missing 'name'")
+    }
+    if (!age || typeof age !== "number") {
+      throw new Error("Invalid or missing 'age'")
+    }
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      throw new Error("invalid or missing 'email'")
+    }
+    if (!phone_nb || typeof phone_nb !== "string") {
+      throw new Error("Invalid or missing 'phonenb'")
+    }
+    if (!address || typeof address !== "string") {
+      throw new Error("nvalid or missing 'addresse'")
+    }
+
     console.log("address:", address)
     const [result] = await db.execute("CALL addClient(?, ?, ?, ?, ?)", [
       name,
@@ -31,8 +48,13 @@ async function listClients() {
     throw err
   }
 }
+
 async function getClientById(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid or missing 'Id'")
+    }
+
     const [rows] = await db.execute("CALL getClient(?)", [id])
     return rows[0]
   } catch (err) {
@@ -43,6 +65,22 @@ async function getClientById(id) {
 
 async function updateClient(id, client) {
   const { name, age, email, phone_nb, address } = client
+
+  if (!name || typeof name !== "string") {
+    throw new Error("Invalid or missing 'name'")
+  }
+  if (!age || typeof age !== "number") {
+    throw new Error("Invalid or missing 'age'")
+  }
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    throw new Error("Invalid or missing 'email'")
+  }
+  if (!phone_nb || typeof phone_nb !== "string") {
+    throw new Error("Invalid orr missing 'phone_nb'")
+  }
+  if (!address || typeof address !== "string") {
+    throw new Error("invalid or missing 'address'")
+  }
   try {
     await db.execute("CALL updateClient(?, ?, ?, ?, ?, ?)", [
       id,
@@ -63,6 +101,9 @@ async function updateClient(id, client) {
 
 async function deleteClient(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("Invalid or missing 'id'")
+    }
     await db.execute("CALL deleteClient(?)", [id])
   } catch (err) {
     console.error("Error while deleting client:", err)
@@ -72,6 +113,10 @@ async function deleteClient(id) {
 
 async function listClientCommands(id) {
   try {
+    if (!id || typeof id !== "number") {
+      throw new Error("invalide or missing 'id'")
+    }
+
     const [rows] = await db.execute("CALL getClientCommands(?)", [id])
 
     const commands = []
@@ -113,6 +158,9 @@ async function listClientCommands(id) {
 
 async function searchClients(q) {
   try {
+    if (!q || typeof q !== "string") {
+      throw new Error("nvalid or missing 'q'")
+    }
     const [rows] = await db.execute("CALL searchClient(?)", [q])
     return rows
   } catch (err) {
